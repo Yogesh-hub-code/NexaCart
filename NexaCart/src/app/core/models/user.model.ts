@@ -12,3 +12,14 @@ export interface User {
   CreatedOn: Date;
   ModifiedOn: Date;
 }
+
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  token?: string;
+  user?: {
+    userId: number;
+    name: string;
+    email: string;
+  };
+}

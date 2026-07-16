@@ -19,13 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\" />
-    <Folder Include="Interfaces\" />
     <Folder Include="Mappings\" />
     <Folder Include="Features\" />
     <Folder Include="Common\" />
     <Folder Include="Validators\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
