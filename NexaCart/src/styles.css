@@ -37,3 +37,8 @@ app-root {
   background: rgba(99, 102, 241, 0.4);
   color: #fff;
 }
+
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -1,0 +1,175 @@
+<div class="pf-shell">
+
+  <!-- Back bar -->
+  <div class="pf-topbar">
+    <a routerLink="/" class="pf-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to Store
+    </a>
+  </div>
+
+  <!-- Loading -->
+  <div class="pf-loading" *ngIf="isLoadingProfile">
+    <div class="pf-spinner"></div>
+    <span>Loading profile…</span>
+  </div>
+
+  <div class="pf-content" *ngIf="!isLoadingProfile">
+
+    <!-- Profile card header -->
+    <div class="pf-hero">
+      <div class="pf-avatar">{{ initials }}</div>
+      <div class="pf-hero-info">
+        <h1 class="pf-name">{{ fullName || 'Your Profile' }}</h1>
+        <p class="pf-email">{{ email }}</p>
+        <span class="pf-role-badge" [class.pf-role-badge--admin]="roleName === 'Admin'">
+          <svg *ngIf="roleName === 'Admin'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          {{ roleName || 'Customer' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="pf-tabs">
+      <button type="button" class="pf-tab" [class.pf-tab--active]="activeTab === 'info'" (click)="activeTab = 'info'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Personal Info
+      </button>
+      <button type="button" class="pf-tab" [class.pf-tab--active]="activeTab === 'password'" (click)="activeTab = 'password'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Change Password
+      </button>
+    </div>
+
+    <!-- ── Personal Info Tab ── -->
+    <div class="pf-card" *ngIf="activeTab === 'info'">
+      <h2 class="pf-card-title">Personal Information</h2>
+      <p class="pf-card-sub">Update your name, email and contact number</p>
+
+      <form (ngSubmit)="saveProfile()" class="pf-form">
+
+        <div class="pf-row">
+          <div class="pf-field">
+            <label for="pf-fname">First Name <span class="pf-req">*</span></label>
+            <input type="text" id="pf-fname" [(ngModel)]="firstName" name="firstName" placeholder="First name" />
+          </div>
+          <div class="pf-field">
+            <label for="pf-lname">Last Name <span class="pf-req">*</span></label>
+            <input type="text" id="pf-lname" [(ngModel)]="lastName" name="lastName" placeholder="Last name" />
+          </div>
+        </div>
+
+        <div class="pf-field">
+          <label for="pf-email">Email Address <span class="pf-req">*</span></label>
+          <input type="email" id="pf-email" [(ngModel)]="email" name="email" placeholder="you@example.com" />
+        </div>
+
+        <div class="pf-field">
+          <label for="pf-mobile">Mobile Number</label>
+          <input type="tel" id="pf-mobile" [(ngModel)]="mobileNumber" name="mobileNumber" placeholder="+1 234 567 8900" />
+        </div>
+
+        <!-- Message -->
+        <div class="pf-msg pf-msg--success" *ngIf="profileMsg && profileMsgType === 'success'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          {{ profileMsg }}
+        </div>
+        <div class="pf-msg pf-msg--error" *ngIf="profileMsg && profileMsgType === 'error'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          {{ profileMsg }}
+        </div>
+
+        <div class="pf-actions">
+          <button type="submit" class="pf-btn-primary" [disabled]="isSavingProfile">
+            <span class="pf-spinner pf-spinner--sm" *ngIf="isSavingProfile"></span>
+            <svg *ngIf="!isSavingProfile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            {{ isSavingProfile ? 'Saving…' : 'Save Changes' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- ── Change Password Tab ── -->
+    <div class="pf-card" *ngIf="activeTab === 'password'">
+      <h2 class="pf-card-title">Change Password</h2>
+      <p class="pf-card-sub">Choose a strong password to keep your account secure</p>
+
+      <form (ngSubmit)="savePassword()" class="pf-form">
+
+        <div class="pf-field">
+          <label for="pf-cpw">Current Password <span class="pf-req">*</span></label>
+          <div class="pf-pw-wrap">
+            <input [type]="showCurrentPw ? 'text' : 'password'" id="pf-cpw" [(ngModel)]="currentPassword" name="currentPassword" placeholder="••••••••" />
+            <button type="button" class="pf-pw-eye" (click)="showCurrentPw = !showCurrentPw" aria-label="Toggle visibility">
+              <svg *ngIf="!showCurrentPw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showCurrentPw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="pf-field">
+          <label for="pf-npw">New Password <span class="pf-req">*</span></label>
+          <div class="pf-pw-wrap">
+            <input [type]="showNewPw ? 'text' : 'password'" id="pf-npw" [(ngModel)]="newPassword" name="newPassword" placeholder="Min. 6 characters" />
+            <button type="button" class="pf-pw-eye" (click)="showNewPw = !showNewPw" aria-label="Toggle visibility">
+              <svg *ngIf="!showNewPw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showNewPw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+
+          <!-- Password strength indicator -->
+          <div class="pf-strength" *ngIf="newPassword">
+            <div class="pf-strength-bar">
+              <div class="pf-strength-fill"
+                [style.width.%]="newPassword.length >= 10 ? 100 : newPassword.length >= 6 ? 60 : 30"
+                [class.pf-strength-fill--weak]="newPassword.length < 6"
+                [class.pf-strength-fill--medium]="newPassword.length >= 6 && newPassword.length < 10"
+                [class.pf-strength-fill--strong]="newPassword.length >= 10">
+              </div>
+            </div>
+            <span class="pf-strength-label"
+              [class.pf-strength-label--weak]="newPassword.length < 6"
+              [class.pf-strength-label--medium]="newPassword.length >= 6 && newPassword.length < 10"
+              [class.pf-strength-label--strong]="newPassword.length >= 10">
+              {{ newPassword.length < 6 ? 'Weak' : newPassword.length < 10 ? 'Medium' : 'Strong' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="pf-field">
+          <label for="pf-conpw">Confirm New Password <span class="pf-req">*</span></label>
+          <div class="pf-pw-wrap">
+            <input [type]="showConfirmPw ? 'text' : 'password'" id="pf-conpw" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="••••••••"
+              [class.pf-input--match]="confirmPassword && newPassword === confirmPassword"
+              [class.pf-input--nomatch]="confirmPassword && newPassword !== confirmPassword" />
+            <button type="button" class="pf-pw-eye" (click)="showConfirmPw = !showConfirmPw" aria-label="Toggle visibility">
+              <svg *ngIf="!showConfirmPw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showConfirmPw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Message -->
+        <div class="pf-msg pf-msg--success" *ngIf="passwordMsg && passwordMsgType === 'success'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          {{ passwordMsg }}
+        </div>
+        <div class="pf-msg pf-msg--error" *ngIf="passwordMsg && passwordMsgType === 'error'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          {{ passwordMsg }}
+        </div>
+
+        <div class="pf-actions">
+          <button type="submit" class="pf-btn-primary pf-btn-purple" [disabled]="isSavingPassword">
+            <span class="pf-spinner pf-spinner--sm" *ngIf="isSavingPassword"></span>
+            <svg *ngIf="!isSavingPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            {{ isSavingPassword ? 'Updating…' : 'Update Password' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</div>

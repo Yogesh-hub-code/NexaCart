@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { LoginRequest } from '../../core/models/login-request.model';
@@ -8,6 +9,9 @@ import { Product } from '../../core/models/product.model';
 
 import { AuthService } from '../../core/services/auth.service';
 import { ProductService } from '../../core/services/product.service';
+import { CategoryService } from '../../core/services/category.service';
+import { Category } from '../../core/models/category.model';
+import { Brand, BrandService } from '../../core/services/brand.service';
 
 @Component({
   selector: 'app-home',
@@ -29,9 +33,17 @@ export class HomeComponent implements OnInit {
   selectedRating = 0;
   maxPrice = 1500;
   searchFocused = false;
+  showProfileMenu = false;
+  categories: Category[] = [];
+  productCategories: Category[] = [];
+  popularBrands: string[] = [];
+  featuredSections: Array<{ category: string; title: string; subtitle: string }> = [];
+  brandss: Brand[] = [];
+  selectedBrandId: number | null = null;
 
   // Authentication states
   isAuthenticated = false;
+  isAdmin = false;
   isLoading = false;
   showAuthModal = false;
   authMessage = '';
@@ -56,38 +68,124 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private readonly productService: ProductService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly categoryService: CategoryService,
+    private readonly brandService: BrandService,
+    private readonly router: Router
   ) { }
 
   ngOnInit(): void {
-    this.products = this.productService.getProducts();
+    this.loadHomeData();
 
     const user = localStorage.getItem('user');
     if (user) {
       const currentUser = JSON.parse(user);
       this.isAuthenticated = true;
-      this.username = currentUser.username;
+      this.username = currentUser.firstName;
+      this.isAdmin = currentUser.roleName === 'Admin';
     }
+  }
+
+  private loadHomeData(): void {
+    debugger;
+    this.categoryService.getAll().subscribe({
+      next: (categories) => {
+        this.categories = categories.map(category => ({
+          ...category,
+          icon: this.categoryIcon(category.name)
+        }));
+        this.productCategories = this.categories;
+        this.featuredSections = this.categories.slice(0, 3).map(category => ({
+          category: category.name,
+          title: `${category.name} Essentials`,
+          subtitle: `Featured ${category.name.toLowerCase()} picks`
+        }));
+      },
+      error: (error) => console.error(error)
+    });
+
+    this.productService.getAll().subscribe({
+      next: (products) => {
+        this.products = products.map(product => this.normalizeProduct(product));
+        this.popularBrands = ['All', ...new Set(this.products.map(x => x.brand ?? '').filter(Boolean) as string[])];
+      },
+      error: (error) => console.error(error)
+    });
+
+    this.brandService.getAll().subscribe({
+      next: (brands) => {
+        debugger; // Won't hit if there's an error
+        this.brandss = brands;
+      },
+      error: (error) => {
+        debugger; // 👈 ADD THIS to check if it's failing
+        console.error(error);
+      }
+    });
   }
 
   // ==========================================================================
   // FILTERS & COMPUTED PROPERTY GETTERS
   // ==========================================================================
+
+  selectCategory(categoryId: number): void {
+    this.router.navigate(['/products/category', categoryId]);
+  }
+
+  selectBrand(brandId: number): void {
+    this.selectedBrandId = brandId;
+
+    // Later you can filter products by brand here
+  }
+
+  private categoryIcon(categoryName: string): string {
+    const iconMap: Record<string, string> = {
+      electronics: '💻',
+      fashion: '👗',
+      home: '🏠',
+      sports: '🏀',
+      health: '🩺'
+    };
+
+    return iconMap[categoryName.toLowerCase()] || '📦';
+  }
+
+  private normalizeProduct(product: Product): Product {
+    return {
+      ...product,
+      id: product.productId,
+      brand: this.brandForProduct(product),
+      category: this.categoryNameForProduct(product),
+      rating: this.ratingForProduct(product),
+      discount: this.discountForProduct(product),
+      isNew: (product.stock ?? 0) > 0,
+      badge: product.productId % 3 === 0 ? 'Trending' : ''
+    };
+  }
+
+  private brandForProduct(product: Product): string {
+    const brands = ['Apple', 'Samsung', 'Sony', 'Nike', 'Google', 'HP', 'Microsoft'];
+    const index = (product.brandId ?? product.productId ?? 0) % brands.length;
+    return brands[index] || 'Top Brand';
+  }
+
+  private categoryNameForProduct(product: Product): string {
+    return this.categories.find(x => x.categoryId === product.categoryId)?.name || 'Other';
+  }
+
+  private ratingForProduct(product: Product): number {
+    return Math.min(5, 3 + ((product.productId ?? 0) % 3) + ((product.stock ?? 0) % 2));
+  }
+
+  private discountForProduct(product: Product): number {
+    return 10 + ((product.productId ?? 0) % 30);
+  }
+
   get filteredProducts(): Product[] {
     return this.products.filter(product => this.matchesFilters(product));
   }
 
-  get popularBrands(): string[] {
-    return this.productService.getPopularBrands();
-  }
 
-  get categories() {
-    return this.productService.getCategories();
-  }
-
-  get featuredSections() {
-    return this.productService.getFeaturedSections();
-  }
 
   get trendingProducts(): Product[] {
     return this.filteredProducts
@@ -97,7 +195,7 @@ export class HomeComponent implements OnInit {
 
   get dealsProducts(): Product[] {
     return this.filteredProducts
-      .filter(x => x.discount >= 20)
+      .filter(x => (x.discount ?? 0) >= 20)
       .slice(0, 4);
   }
 
@@ -110,7 +208,7 @@ export class HomeComponent implements OnInit {
   get brands(): string[] {
     return [
       'All',
-      ...new Set(this.products.map(x => x.brand))
+      ...new Set(this.products.map(x => x.brand ?? '').filter(Boolean) as string[])
     ];
   }
 
@@ -198,8 +296,8 @@ export class HomeComponent implements OnInit {
   }
 
   handleAuth(): void {
-    debugger;
     this.authMessage = '';
+
 
     if (!this.email.trim()) {
       this.authMessage = 'Please enter your email.';
@@ -221,7 +319,7 @@ export class HomeComponent implements OnInit {
     this.authService.login(request).subscribe({
       next: (result) => {
         this.isLoading = false;
-        debugger;
+
 
         if (!result.success) {
           this.authMessage = result.message;
@@ -233,6 +331,7 @@ export class HomeComponent implements OnInit {
         this.isAuthenticated = true;
         this.username = result.user.firstName;
         this.authMessage = result.message;
+        this.isAdmin = result.user.roleName === 'Admin';
 
         this.email = '';
         this.password = '';
@@ -342,11 +441,21 @@ export class HomeComponent implements OnInit {
 
 
 
+  navigateToAdmin(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/admin']);
+  }
+
+  navigateToProfile(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/profile']);
+  }
+
   handleLogout(): void {
-    debugger;
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     this.isAuthenticated = false;
+    this.isAdmin = false;
     this.username = '';
     this.cartCount = 0;
     this.wishlistIds = [];
@@ -404,7 +513,7 @@ export class HomeComponent implements OnInit {
       this.selectedCategory === 'All' ||
       product.category === this.selectedCategory;
 
-    const matchesRating = product.rating >= this.selectedRating;
+    const matchesRating = (product.rating ?? 0) >= this.selectedRating;
     const matchesPrice = product.price <= this.maxPrice;
 
     return (

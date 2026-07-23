@@ -1,14 +1,23 @@
 export interface Product {
-  id: number;
+  productId: number;
+  categoryId: number;
+  brandId?: number;
+
   name: string;
-  brand: string;
-  category: string;
+  description?: string;
+  sku: string;
+
   price: number;
-  originalPrice: number;
-  discount: number;
-  rating: number;
-  reviews: number;
-  image: string;
-  badge: 'Trending' | 'New' | 'Hot Deal' | 'Best Seller' | 'Featured';
+  stock: number;
+
+  imageUrl?: string;
+  brand?: string;
+  category?: string;
+  rating?: number;
+  discount?: number;
   isNew?: boolean;
+  badge?: string;
+  id?: number;
+
+  isActive: boolean;
 }
