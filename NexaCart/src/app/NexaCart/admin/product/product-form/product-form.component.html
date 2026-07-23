@@ -1,0 +1,249 @@
+<div class="ad-shell">
+
+  <!-- Sidebar -->
+  <aside class="ad-sidebar">
+
+    <a class="ad-logo" routerLink="/">
+      <div class="ad-logo-icon">N</div>
+      <span class="ad-logo-text">Nexa<em>Cart</em></span>
+    </a>
+
+    <nav class="ad-nav">
+
+      <span class="ad-nav-label">Management</span>
+
+      <a routerLink="/admin" routerLinkActive="ad-nav-link--active" class="ad-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+
+      <a routerLink="/admin/categories" routerLinkActive="ad-nav-link--active" class="ad-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Categories
+      </a>
+
+      <a routerLink="/admin/brands" routerLinkActive="ad-nav-link--active" class="ad-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Brands
+      </a>
+
+      <a routerLink="/admin/products" routerLinkActive="ad-nav-link--active" class="ad-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Products
+      </a>
+
+    </nav>
+
+    <a routerLink="/" class="ad-back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to Store
+    </a>
+
+  </aside>
+
+  <!-- Main -->
+
+  <div class="ad-main">
+
+    <header class="ad-topbar">
+
+      <div>
+
+        <p class="ad-page-label">
+          Admin / Products / {{isEditMode ? 'Edit' : 'Add'}}
+        </p>
+
+        <h1 class="ad-page-title">
+          {{isEditMode ? 'Edit Product' : 'New Product'}}
+        </h1>
+
+      </div>
+
+      <a routerLink="/admin/products" class="ad-btn-ghost">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Back to List
+      </a>
+
+    </header>
+
+    <div class="ad-form-card">
+
+     <form class="ad-form" (ngSubmit)="saveProduct()">
+
+  <!-- Category -->
+  <div class="ad-field">
+
+    <label>
+      Category
+      <span class="ad-required">*</span>
+    </label>
+
+    <ng-select
+      [(ngModel)]="categoryId"
+      name="categoryId"
+      placeholder="Select a category"
+      [searchable]="true"
+      [clearable]="false"
+      bindLabel="name"
+      bindValue="categoryId"
+      [items]="categories">
+    </ng-select>
+
+  </div>
+
+  <!-- Product Name -->
+  <div class="ad-field">
+
+    <label>
+      Product Name
+      <span class="ad-required">*</span>
+    </label>
+
+    <input
+      type="text"
+      [(ngModel)]="name"
+      name="name"
+      placeholder="Enter Product Name">
+
+  </div>
+
+  <!-- SKU -->
+  <div class="ad-field">
+
+    <label>
+      SKU (Stock Keeping Unit)
+      <span class="ad-required">*</span>
+    </label>
+
+    <input
+      type="text"
+      [(ngModel)]="sku"
+      name="sku"
+      placeholder="Enter unique SKU (e.g., PROD-12345)">
+
+  </div>
+
+  <!-- Description -->
+  <div class="ad-field">
+
+    <label>Description</label>
+
+    <textarea
+      rows="4"
+      [(ngModel)]="description"
+      name="description">
+    </textarea>
+
+  </div>
+
+  <!-- Price / Stock -->
+  <div class="row-2">
+
+    <div class="ad-field">
+
+      <label>
+        Price
+        <span class="ad-required">*</span>
+      </label>
+
+      <input
+        type="number"
+        [(ngModel)]="price"
+        name="price">
+
+    </div>
+
+    <div class="ad-field">
+
+      <label>
+        Stock
+        <span class="ad-required">*</span>
+      </label>
+
+      <input
+        type="number"
+        [(ngModel)]="stock"
+        name="stock">
+
+    </div>
+
+  </div>
+
+  <!-- Image -->
+  <div class="ad-field">
+
+    <label>Image URL</label>
+
+    <input
+      type="text"
+      [(ngModel)]="imageUrl"
+      name="imageUrl"
+      placeholder="https://image.jpg">
+
+  </div>
+
+  <!-- Active -->
+  <div class="ad-field">
+
+    <label class="ad-checkbox-wrapper">
+      <input
+        type="checkbox"
+        [(ngModel)]="isActive"
+        name="isActive"
+        class="ad-checkbox-input">
+      <span class="ad-checkbox-custom"></span>
+      <span class="ad-checkbox-label">Active Product</span>
+    </label>
+
+  </div>
+
+  <!-- Messages -->
+
+  <div
+    *ngIf="message && !message.includes('Failed')"
+    class="ad-form-msg ad-form-msg--success">
+
+    {{ message }}
+
+  </div>
+
+  <div
+    *ngIf="message && message.includes('Failed')"
+    class="ad-form-msg ad-form-msg--error">
+
+    {{ message }}
+
+  </div>
+
+  <!-- Buttons -->
+
+  <div class="ad-form-actions">
+
+    <a
+      routerLink="/admin/products"
+      class="ad-btn-ghost">
+
+      Cancel
+
+    </a>
+
+    <button
+      type="submit"
+      class="ad-btn-primary"
+      [disabled]="isLoading">
+
+      {{ isLoading
+          ? 'Saving...'
+          : (isEditMode ? 'Update Product' : 'Save Product') }}
+
+    </button>
+
+  </div>
+
+</form>
+
+    </div>
+
+  </div>
+
+</div>

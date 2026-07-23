@@ -1,31 +1,32 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
 import { LoginRequest } from '../models/login-request.model';
+import { LoginResponse } from '../models/LoginResponse.model';
+import { environment } from '../../../environments/environment';
+import { RegisterRequest } from '../models/login-request.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  login(request: LoginRequest): { success: boolean; message: string } {
-    const email = request.email.trim().toLowerCase();
-    const password = request.password.trim();
 
-    if (!email || !password) {
-      return {
-        success: false,
-        message: 'Please enter both email and password.'
-      };
-    }
+  private apiUrl = `${environment.apiUrl}/Auth`;
 
-    if (email === 'admin@nexacart.com' && password === 'password123') {
-      return {
-        success: true,
-        message: `Welcome back, ${email}!`
-      };
-    }
+  constructor(private http: HttpClient) { }
 
-    return {
-      success: false,
-      message: 'Invalid credentials. Try admin@nexacart.com / password123.'
-    };
+  login(request: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request);
   }
+
+register(request: RegisterRequest): Observable<any> {
+
+    return this.http.post<any>(
+      `${this.apiUrl}/register`,
+      request
+    );
+
+  }
+
 }

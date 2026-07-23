@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,13 +7,17 @@ using NexaCart.Domain.Common;
 
 namespace NexaCart.Domain.Entities
 {
-    public class Brand : BaseEntity
-    {
-        public string Name { get; set; } = string.Empty;
+  public class Brand : BaseEntity
+  {
+    public int BrandId { get; set; }
 
-        public string? Description { get; set; }
+    public string BrandName { get; set; } = string.Empty;
 
-        // Navigation Property
-        public ICollection<Product> Products { get; set; } = new List<Product>();
-    }
+    public string? Description { get; set; }
+
+    public string? BrandLogo { get; set; }
+
+    // Navigation Property
+    public ICollection<Product> Products { get; set; } = new List<Product>();
+  }
 }

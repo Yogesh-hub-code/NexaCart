@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
@@ -6,7 +7,7 @@ import { LoginRequest } from '../../core/models/login-request.model';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -33,15 +34,16 @@ export class LoginComponent {
       password: this.password
     };
 
-    const result = this.authService.login(request);
-    this.loginInProgress = false;
-    this.message = result.message;
-    this.isError = !result.success;
+    this.authService.login(request).subscribe((result) => {
+      this.loginInProgress = false;
+      this.message = result.message;
+      this.isError = !result.success;
 
-    if (result.success) {
-      this.password = '';
-      form.form.markAsPristine();
-      form.form.markAsUntouched();
-    }
+      if (result.success) {
+        this.password = '';
+        form.form.markAsPristine();
+        form.form.markAsUntouched();
+      }
+    });
   }
 }

@@ -1,0 +1,83 @@
+<div class="ad-shell">
+  <aside class="ad-sidebar">
+    <a class="ad-logo" routerLink="/">
+      <div class="ad-logo-icon"><span>N</span></div>
+      <span class="ad-logo-text">Nexa<em>Cart</em></span>
+    </a>
+    <nav class="ad-nav">
+      <span class="ad-nav-label">Management</span>
+      <a routerLink="/admin" routerLinkActive="ad-nav-link--active" [routerLinkActiveOptions]="{exact:true}" class="ad-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a routerLink="/admin/categories" routerLinkActive="ad-nav-link--active" class="ad-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Categories
+      </a>
+      <a routerLink="/admin/brands" routerLinkActive="ad-nav-link--active" class="ad-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Brands
+      </a>
+      <a routerLink="/admin/products" routerLinkActive="ad-nav-link--active" class="ad-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Products
+      </a>
+    </nav>
+    <a routerLink="/" class="ad-back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to Store
+    </a>
+  </aside>
+
+  <div class="ad-main">
+    <header class="ad-topbar">
+      <div>
+        <p class="ad-page-label">Admin / Brands</p>
+        <h1 class="ad-page-title">Brand Management</h1>
+      </div>
+      <button type="button" class="ad-btn-primary" (click)="addBrand()">Add Brand</button>
+    </header>
+
+    <div class="ad-loading" *ngIf="isLoading">
+      <div class="ad-spinner"></div>
+      <span>Loading brands…</span>
+    </div>
+
+    <div class="ad-empty" *ngIf="!isLoading && brands.length === 0">
+      <h3>No brands yet</h3>
+      <p>Create your first brand to get started</p>
+      <button type="button" class="ad-btn-primary" (click)="addBrand()">Add Brand</button>
+    </div>
+
+    <div class="ad-table-wrap" *ngIf="!isLoading && brands.length > 0">
+      <table class="ad-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let brand of brands; let i = index" class="ad-table-row">
+            <td class="ad-td-num">{{ i + 1 }}</td>
+            <td class="ad-td-name">{{ brand.brandName }}</td>
+            <td class="ad-td-desc">{{ brand.description || '—' }}</td>
+            <td>
+              <span class="ad-status-badge" [class.ad-status-badge--active]="brand.isActive" [class.ad-status-badge--inactive]="!brand.isActive">
+                <span class="ad-status-dot"></span>
+                {{ brand.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td class="ad-td-actions">
+              <button type="button" class="ad-btn-icon ad-btn-icon--edit" (click)="editBrand(brand.brandId)">Edit</button>
+              <button type="button" class="ad-btn-icon ad-btn-icon--delete" (click)="deleteBrand(brand.brandId)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

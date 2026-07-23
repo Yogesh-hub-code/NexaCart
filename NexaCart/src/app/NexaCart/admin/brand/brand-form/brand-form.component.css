@@ -1,0 +1,10 @@
+.container { min-height: 100vh; display: grid; place-items: center; background: #050507; color: #f1f5f9; padding: 24px; }
+.card { width: min(100%, 560px); background: linear-gradient(145deg, #0d0d16, #0a0a13); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 28px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+input, textarea { padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #f1f5f9; }
+.checkbox-row label { display: flex; align-items: center; gap: 8px; }
+.buttons { display: flex; gap: 10px; margin-top: 12px; }
+.save, .cancel { border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
+.save { background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; }
+.cancel { background: rgba(255,255,255,0.08); color: #f1f5f9; }
+.message { margin-top: 12px; color: #a5b4fc; }
