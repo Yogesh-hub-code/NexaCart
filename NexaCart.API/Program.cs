@@ -12,23 +12,27 @@ using NexaCart.Infrastructure.Persistence.Contexts;
 using NexaCart.Infrastructure.Repositories;
 using NexaCart.Infrastructure.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+// 1. MUST be set before CreateBuilder to disable file system watchers globally
+Environment.SetEnvironmentVariable("DOTNET_USE_POLLING_FILE_WATCHER", "false");
 
-// 1. Ensure the app binds to Render's dynamic PORT variable
+// 2. Initialize WebApplicationBuilder without default auto-reload configuration
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+  Args = args
+});
+
+// 3. Rebuild configuration explicitly with reloadOnChange set to false
+builder.Configuration.Sources.Clear();
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: false)
+    .AddEnvironmentVariables();
+
+// 4. Ensure the app binds to Render's dynamic PORT variable
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-// 2. Disable reloadOnChange to prevent inotify limit crashes on Linux/Render
-builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
-{
-  foreach (var source in config.Sources.OfType<FileConfigurationSource>())
-  {
-    source.ReloadOnChange = false;
-  }
-});
-
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
