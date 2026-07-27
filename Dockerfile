@@ -2,22 +2,26 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy project file and restore dependencies
-COPY *.csproj ./
-RUN dotnet restore
+# Disable telemetry to save overhead memory
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 
-# Copy all source files and publish Release build
+# Copy project file and restore
+COPY *.csproj ./
+RUN dotnet restore --disable-parallel
+
+# Copy remaining source code
 COPY . ./
-RUN dotnet publish -c Release -o /app/out
+
+# Publish with low-memory build settings
+RUN dotnet publish -c Release -o /app/out --no-restore -p:Parallel=false
 
 # --- Stage 2: Runtime ---
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Copy binaries from Stage 1
+# Copy built binaries from Stage 1
 COPY --from=build /app/out .
 
-# Dynamic port for Render
 ENV PORT=8080
 EXPOSE 8080
 
