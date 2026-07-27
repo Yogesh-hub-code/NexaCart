@@ -784,117 +784,12 @@
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .ad-sidebar {
-    display: none;
-  }
-  .ad-main {
-    padding: 20px;
-  }
-  .ad-stats-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+  .ad-sidebar { display: none; }
+  .ad-main { padding: 20px; }
+  .ad-stats-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 480px) {
-  .ad-stats-grid {
-    grid-template-columns: 1fr;
-  }
-  .ad-topbar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-/* ===========================
-   NEXACART NG-SELECT THEME
-   =========================== */
-
-.ng-select {
-    width: 100%;
-    font-family: "Inter", sans-serif;
-}
-
-/* Main box */
-.ng-select .ng-select-container {
-    background: #111827 !important;
-    border: 1px solid #374151 !important;
-    border-radius: 12px !important;
-    min-height: 48px !important;
-    color: #f8fafc !important;
-    transition: all .25s ease;
-    box-shadow: none !important;
-}
-
-.ng-select.ng-select-focused .ng-select-container {
-    border-color: #6366f1 !important;
-    box-shadow: 0 0 0 3px rgba(99,102,241,.18) !important;
-}
-
-/* Selected value */
-.ng-select .ng-value {
-    color: #f8fafc !important;
-}
-
-/* Placeholder */
-.ng-select .ng-placeholder {
-    color: #94a3b8 !important;
-}
-
-/* Input */
-.ng-select .ng-input input {
-    color: #fff !important;
-}
-
-/* Arrow */
-.ng-select .ng-arrow {
-    border-color: #94a3b8 transparent transparent !important;
-}
-
-/* Dropdown */
-.ng-dropdown-panel {
-    background: #111827 !important;
-    border: 1px solid #374151 !important;
-    border-radius: 12px !important;
-    margin-top: 6px;
-    overflow: hidden;
-    box-shadow: 0 12px 30px rgba(0,0,0,.45);
-}
-
-/* Options */
-.ng-dropdown-panel .ng-option {
-    color: #f8fafc !important;
-    padding: 12px 16px;
-    transition: .2s;
-}
-
-/* Hover */
-.ng-dropdown-panel .ng-option.ng-option-marked {
-    background: #4f46e5 !important;
-    color: white !important;
-}
-
-/* Selected */
-.ng-dropdown-panel .ng-option.ng-option-selected {
-    background: #6366f1 !important;
-    color: white !important;
-}
-
-/* Search box */
-.ng-dropdown-panel .ng-input input {
-    background: #0f172a !important;
-    color: white !important;
-}
-
-/* Disabled */
-.ng-select.ng-select-disabled .ng-select-container {
-    opacity: .6;
-}
-
-/* Clear icon */
-.ng-select .ng-clear {
-    color: #94a3b8;
-}
-
-.ng-select .ng-clear:hover {
-    color: white;
+  .ad-stats-grid { grid-template-columns: 1fr; }
+  .ad-topbar { flex-direction: column; align-items: flex-start; }
 }

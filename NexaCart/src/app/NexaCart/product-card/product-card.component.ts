@@ -5,6 +5,7 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { Product } from '../../core/models/product.model';
 import { ProductService } from '../../core/services/product.service';
 
+
 @Component({
   selector: 'app-product-card',
   standalone: true,
@@ -18,7 +19,7 @@ export class ProductCardComponent implements OnInit {
   @Input() isWishlisted = false;
   @Input() animDelay = 0;
 
-  @Output() addToCart = new EventEmitter<Product>();
+  @Output() addToCart  = new EventEmitter<Product>();
   @Output() buyNow = new EventEmitter<Product>();
   @Output() wishlistToggled = new EventEmitter<number>();
 
@@ -41,9 +42,26 @@ export class ProductCardComponent implements OnInit {
     }
   }
 
+   apiBaseUrl = 'https://localhost:7053';
+
+  getImageUrl(imagePath: string | null | undefined): string {
+
+    if (!imagePath) {
+      return 'https://via.placeholder.com/400x300';
+    }
+
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+
+    return this.apiBaseUrl + imagePath;
+  }
+  
+
   loadProducts(): void {
     this.productService.getByCategory(this.categoryId).subscribe({
       next: (data) => {
+        debugger;
         this.products = data;
         this.categoryName = `Category ${this.categoryId}`;
       },

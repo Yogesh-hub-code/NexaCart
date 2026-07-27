@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -12,6 +12,9 @@ import { ProductService } from '../../core/services/product.service';
 import { CategoryService } from '../../core/services/category.service';
 import { Category } from '../../core/models/category.model';
 import { Brand, BrandService } from '../../core/services/brand.service';
+import { HttpClient } from '@angular/common/http';
+import { LocationPickerComponent } from '../location-picker/location-picker.component';
+import { CartService } from '../../core/services/cart.service';
 
 @Component({
   selector: 'app-home',
@@ -19,19 +22,19 @@ import { Brand, BrandService } from '../../core/services/brand.service';
   imports: [
     CommonModule,
     FormsModule,
-    ProductCardComponent
+    ProductCardComponent, LocationPickerComponent
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
 
   products: Product[] = [];
   searchTerm = '';
   selectedBrand = 'All';
   selectedCategory = 'All';
   selectedRating = 0;
-  maxPrice = 1500;
+  maxPrice = 999999;
   searchFocused = false;
   showProfileMenu = false;
   categories: Category[] = [];
@@ -48,6 +51,8 @@ export class HomeComponent implements OnInit {
   showAuthModal = false;
   authMessage = '';
   username = '';
+
+  UserId = 0;
 
   // Login credentials
   email = '';
@@ -66,62 +71,307 @@ export class HomeComponent implements OnInit {
   pendingProduct: Product | null = null;
   pendingAction: 'cart' | 'buy' | null = null;
 
+  currentLocation: string = 'Fetching location...';
+  showLocation = false;
+
+  apiBaseUrl = 'https://localhost:7053';
+
+  // Dynamic Countdown Timer State
+  timerHours = 16;
+  timerMinutes = 24;
+  timerSeconds = 8;
+  private timerInterval: any;
+
+  // Cartoon badge variations
+  funBadges = [
+    { label: '🔥 HOT DROP', icon: '⚡' },
+    { label: '🎉 CRAZY DEAL', icon: '🎈' },
+    { label: '💥 SUPER SAVER', icon: '🚀' },
+    { label: '⭐ TOP RATED', icon: '🌟' }
+  ];
+  cartCountSubject: any;
+
   constructor(
     private readonly productService: ProductService,
     private readonly authService: AuthService,
     private readonly categoryService: CategoryService,
     private readonly brandService: BrandService,
-    private readonly router: Router
+    private readonly cartService: CartService,
+    private readonly router: Router,
+    private http: HttpClient
   ) { }
 
   ngOnInit(): void {
-    this.loadHomeData();
+    debugger;
 
     const user = localStorage.getItem('user');
+
     if (user) {
       const currentUser = JSON.parse(user);
       this.isAuthenticated = true;
       this.username = currentUser.firstName;
+      this.UserId = currentUser.userId;
       this.isAdmin = currentUser.roleName === 'Admin';
+
+      // Load cart count
+      this.cartService.loadCartCount(this.UserId);
+    }
+
+    this.cartService.cartCount$
+      .subscribe(count => {
+        this.cartCount = count;
+      });
+
+    this.loadHomeData();
+    this.getCurrentLocation();
+    this.startCountdownTimer();
+  }
+
+  ngOnDestroy(): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+  }
+
+  private startCountdownTimer(): void {
+    this.timerInterval = setInterval(() => {
+      if (this.timerSeconds > 0) {
+        this.timerSeconds--;
+      } else {
+        this.timerSeconds = 59;
+        if (this.timerMinutes > 0) {
+          this.timerMinutes--;
+        } else {
+          this.timerMinutes = 59;
+          if (this.timerHours > 0) {
+            this.timerHours--;
+          } else {
+            this.timerHours = 23;
+          }
+        }
+      }
+    }, 1000);
+  }
+
+  formatTime(value: number): string {
+    return value.toString().padStart(2, '0');
+  }
+
+  // Get 4 dynamic deal products mixed from available API products
+  get dealProducts(): Product[] {
+    if (!this.products || this.products.length === 0) return [];
+    return this.products.slice(0, 4);
+  }
+
+  // Get 1 featured flagship product for the promo banner
+  get featuredHeroProduct(): Product | null {
+    if (!this.products || this.products.length === 0) return null;
+    return this.products[4] || this.products[0];
+  }
+
+  // Dynamic Top Promo Cards (picks 3 featured products from your API data)
+  get promoProducts(): Product[] {
+    if (!this.products || this.products.length < 3) return [];
+    return this.products.slice(0, 3);
+  }
+
+  // Dynamic Personalized Recommendations (picks 4 products from your API data)
+  get recoProducts(): Product[] {
+    if (!this.products || this.products.length === 0) return [];
+    return this.products.slice(3, 7);
+  }
+
+  loadCartCount(userId: number) {
+    debugger;
+
+    this.cartService.getCart(userId)
+      .subscribe({
+        next: (cart: any) => {
+          console.log("Cart Response:", cart);
+          const count = cart.item.items.length;
+          console.log("Cart Count:", count);
+          if (this.cartCountSubject) {
+            this.cartCountSubject.next(count);
+          }
+        },
+        error: (err) => {
+          console.error("Cart Count Error:", err);
+          if (this.cartCountSubject) {
+            this.cartCountSubject.next(0);
+          }
+        }
+      });
+  }
+
+  navigateToProduct(productId: number): void {
+    debugger;
+    this.router.navigate(['/products', productId]);
+  }
+
+  // Robust image path cleaner handling Windows backslashes & apiBaseUrl
+  getImageUrl(imagePath: string | null | undefined): string {
+    if (!imagePath) {
+      return 'https://via.placeholder.com/400x300';
+    }
+
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+
+    // Replace Windows backslashes (\) with web slashes (/)
+    const normalizedPath = imagePath.replace(/\\/g, '/');
+    const baseUrl = this.apiBaseUrl.endsWith('/') ? this.apiBaseUrl.slice(0, -1) : this.apiBaseUrl;
+    const cleanPath = normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`;
+
+    return `${baseUrl}${cleanPath}`;
+  }
+
+  onLocationSelected(location: string) {
+    this.currentLocation = location;
+    this.showLocation = false;
+  }
+
+  openLocationSelector(): void {
+    const location = prompt('Enter your city');
+    if (location && location.trim()) {
+      this.currentLocation = location.trim();
+    }
+  }
+
+  getCurrentLocation(): void {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          this.http.get<any>(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=en`
+          ).subscribe({
+            next: (response) => {
+              const a = response.address;
+              const area =
+                a.suburb ||
+                a.neighbourhood ||
+                a.residential ||
+                a.city_district ||
+                a.quarter ||
+                a.hamlet ||
+                a.village ||
+                a.town ||
+                a.city;
+
+              const city =
+                a.city ||
+                a.town ||
+                a.village ||
+                a.county;
+
+              if (area && city) {
+                this.currentLocation = `${area}, ${city}`;
+              } else if (city) {
+                this.currentLocation = city;
+              } else {
+                this.currentLocation = response.display_name;
+              }
+            },
+            error: () => {
+              this.currentLocation = 'Location unavailable';
+            }
+          });
+        },
+        () => {
+          this.currentLocation = 'Location unavailable';
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    } else {
+      this.currentLocation = 'Geolocation not supported';
     }
   }
 
   private loadHomeData(): void {
-    debugger;
     this.categoryService.getAll().subscribe({
       next: (categories) => {
         this.categories = categories.map(category => ({
           ...category,
           icon: this.categoryIcon(category.name)
         }));
+
         this.productCategories = this.categories;
+
         this.featuredSections = this.categories.slice(0, 3).map(category => ({
           category: category.name,
           title: `${category.name} Essentials`,
           subtitle: `Featured ${category.name.toLowerCase()} picks`
         }));
       },
-      error: (error) => console.error(error)
+      error: err => console.error(err)
     });
 
     this.productService.getAll().subscribe({
       next: (products) => {
-        this.products = products.map(product => this.normalizeProduct(product));
-        this.popularBrands = ['All', ...new Set(this.products.map(x => x.brand ?? '').filter(Boolean) as string[])];
+        console.log("API PRODUCTS:", products);
+        this.products = products.map(product =>
+          this.normalizeProduct(product)
+        );
+
+        console.log("NORMALIZED:", this.products);
+
+        this.popularBrands = [
+          'All',
+          ...new Set(
+            this.products
+              .map(x => x.brand ?? '')
+              .filter(Boolean)
+          )
+        ];
       },
-      error: (error) => console.error(error)
+      error: err => console.error(err)
     });
 
     this.brandService.getAll().subscribe({
-      next: (brands) => {
-        debugger; // Won't hit if there's an error
+      next: brands => {
+        console.log("BRANDS:", brands);
         this.brandss = brands;
       },
-      error: (error) => {
-        debugger; // 👈 ADD THIS to check if it's failing
-        console.error(error);
-      }
+      error: err => console.error(err)
     });
+  }
+
+  addToCart(product: Product): void {
+    debugger;
+
+    if (!this.isAuthenticated) {
+      this.openAuthModal('cart', product);
+      return;
+    }
+
+    const user = JSON.parse(
+      localStorage.getItem('user')!
+    );
+
+    const request = {
+      UserId: user.userId,
+      productId: product.productId,
+      quantity: 1
+    };
+
+    this.cartService.addToCart(request)
+      .subscribe({
+        next: (response) => {
+          // Refresh count from API
+          this.cartService.loadCartCount(user.userId);
+          this.authMessage = `${product.name} added to cart`;
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
   }
 
   // ==========================================================================
@@ -134,8 +384,6 @@ export class HomeComponent implements OnInit {
 
   selectBrand(brandId: number): void {
     this.selectedBrandId = brandId;
-
-    // Later you can filter products by brand here
   }
 
   private categoryIcon(categoryName: string): string {
@@ -184,8 +432,6 @@ export class HomeComponent implements OnInit {
   get filteredProducts(): Product[] {
     return this.products.filter(product => this.matchesFilters(product));
   }
-
-
 
   get trendingProducts(): Product[] {
     return this.filteredProducts
@@ -298,7 +544,6 @@ export class HomeComponent implements OnInit {
   handleAuth(): void {
     this.authMessage = '';
 
-
     if (!this.email.trim()) {
       this.authMessage = 'Please enter your email.';
       return;
@@ -319,7 +564,6 @@ export class HomeComponent implements OnInit {
     this.authService.login(request).subscribe({
       next: (result) => {
         this.isLoading = false;
-
 
         if (!result.success) {
           this.authMessage = result.message;
@@ -381,9 +625,7 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-
     this.isLoading = true;
-
 
     const registerData = {
       firstName: this.firstName,
@@ -393,53 +635,32 @@ export class HomeComponent implements OnInit {
       roleId: 2   // Customer role
     };
 
-
     this.authService.register(registerData)
       .subscribe({
-
         next: (response: any) => {
           debugger;
-
           this.isLoading = false;
-
           this.authMessage = response.message;
-
           console.log(response);
 
-
           setTimeout(() => {
-
             this.email = this.registerEmail;
-
             this.switchToLogin();
-
 
             this.firstName = '';
             this.lastName = '';
             this.registerEmail = '';
             this.registerPassword = '';
-
           }, 1200);
-
         },
-
-
         error: (error: any) => {
-
           this.isLoading = false;
-
           console.error(error);
-
-
           this.authMessage =
             error.error?.message || 'Registration failed';
-
         }
-
       });
   }
-
-
 
   navigateToAdmin(): void {
     this.showProfileMenu = false;
@@ -462,19 +683,6 @@ export class HomeComponent implements OnInit {
     this.email = '';
     this.password = '';
     this.authMessage = '';
-  }
-
-  // ==========================================================================
-  // COMMERCE FLOW OPERATION HOOKS
-  // ==========================================================================
-  addToCart(product: Product): void {
-    if (!this.isAuthenticated) {
-      this.openAuthModal('cart', product);
-      return;
-    }
-
-    this.cartCount++;
-    this.authMessage = `"${product.name}" added to your cart.`;
   }
 
   buyNow(product: Product): void {

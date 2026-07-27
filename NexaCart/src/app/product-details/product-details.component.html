@@ -1,0 +1,141 @@
+<!-- LOADING SPINNER -->
+<div class="pdp-loader-box" *ngIf="loading">
+  <div class="pdp-spinner"></div>
+  <p>Loading product details...</p>
+</div>
+
+<!-- MAIN PDP CONTAINER -->
+<div class="pdp-wrapper" *ngIf="!loading && product">
+
+  <!-- BREADCRUMB STRIP -->
+  <nav class="pdp-breadcrumb">
+    <a routerLink="/">Home</a> 
+    <span class="sep">›</span> 
+    <a [routerLink]="['/products/category', product.categoryId]">{{ product.category || 'Category' }}</a> 
+    <span class="sep">›</span> 
+    <span class="current">{{ product.name }}</span>
+  </nav>
+
+  <!-- UNIFIED SINGLE DUAL-COLUMN CARD -->
+  <div class="pdp-main-card">
+    <div class="pdp-grid">
+
+      <!-- LEFT COLUMN: STICKY GALLERY & ACTION BUTTONS -->
+      <div class="pdp-left">
+        <div class="main-image">
+          <img 
+            [src]="selectedImage || getImageUrl(product.imageUrl)" 
+            [alt]="product.name" 
+            (error)="$any($event.target).src = 'https://via.placeholder.com/600x600?text=Product+Image'" />
+        </div>
+
+        <!-- THUMBNAIL SELECTORS -->
+        <div class="pdp-thumbnails">
+          <div 
+            class="pdp-thumb" 
+            [class.active]="selectedImage === getImageUrl(product.imageUrl) || !selectedImage"
+            (click)="selectedImage = getImageUrl(product.imageUrl)">
+            <img [src]="getImageUrl(product.imageUrl)" [alt]="product.name" (error)="$any($event.target).src = 'https://via.placeholder.com/100'" />
+          </div>
+          <div 
+            class="pdp-thumb" 
+            [class.active]="selectedImage === 'https://via.placeholder.com/600x600?text=Side+Angle'"
+            (click)="selectedImage = 'https://via.placeholder.com/600x600?text=Side+Angle'">
+            <img src="https://via.placeholder.com/100?text=Side+View" alt="Side View" />
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="action-buttons">
+          <button type="button" class="cart-btn" (click)="addToCart()">
+            🛒 Add to Cart
+          </button>
+          <button type="button" class="buy-btn" (click)="buyNow()">
+            ⚡ Buy Now
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: DETAILS, OFFERS & SPECS -->
+      <div class="pdp-right">
+
+        <span class="pdp-brand">{{ product.brand || 'Flagship Edition' }}</span>
+        <h1>{{ product.name }}</h1>
+
+        <!-- RATING & REVIEWS -->
+        <div class="rating-row">
+          <div class="rating-box">
+            ★ 4.5
+          </div>
+          <span class="rating-count">1,842 Ratings & 320 Reviews</span>
+          <span class="assured-badge">✓ NexaAssured</span>
+        </div>
+
+        <!-- PRICING CARD -->
+        <div class="price-section">
+          <div class="price-row">
+            <h2>₹{{ product.price | number }}</h2>
+            <span class="mrp">₹{{ (product.price * 1.25) | number:'1.0-0' }}</span>
+            <span class="discount">20% OFF</span>
+          </div>
+          <span class="tax-note">Inclusive of all taxes</span>
+        </div>
+
+        <!-- DESCRIPTION -->
+        <p class="product-description" *ngIf="product.description">
+          {{ product.description }}
+        </p>
+
+        <!-- BANK OFFERS -->
+        <div class="offers-section">
+          <h3>Available Offers</h3>
+          <ul>
+            <li>🏷️ <strong>Bank Offer:</strong> 5% Unlimited Cashback on Axis Bank Credit Card</li>
+            <li>🏷️ <strong>Special Offer:</strong> Extra ₹1,500 off on exchange deals</li>
+          </ul>
+        </div>
+
+        <!-- DELIVERY PINCODE CHECKER -->
+        <div class="delivery-box">
+          <h3>Delivery Options</h3>
+          <div class="pincode-wrap">
+            <input type="text" [(ngModel)]="pincode" placeholder="Enter 6-digit Pincode" maxlength="6" />
+            <button type="button" (click)="checkDelivery()">Check</button>
+          </div>
+          <p class="delivery-status" *ngIf="deliveryMessage">{{ deliveryMessage }}</p>
+          <span class="delivery-default" *ngIf="!deliveryMessage">
+            🚚 Free Delivery available by tomorrow. Cash on Delivery eligible.
+          </span>
+        </div>
+
+        <!-- SPECIFICATIONS TABLE -->
+        <div class="specs-section">
+          <h3>Specifications</h3>
+          <table class="specs-table">
+            <tbody>
+              <tr>
+                <td class="spec-name">In The Box</td>
+                <td class="spec-value">1x {{ product.name }}, User Manual, Charging Cable, Warranty Card</td>
+              </tr>
+              <tr>
+                <td class="spec-name">Model Name</td>
+                <td class="spec-value">{{ product.name }}</td>
+              </tr>
+              <tr>
+                <td class="spec-name">Category</td>
+                <td class="spec-value">{{ product.category || 'General' }}</td>
+              </tr>
+              <tr>
+                <td class="spec-name">Stock Status</td>
+                <td class="spec-value">In Stock ({{ product.stock ?? 12 }} units left)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>

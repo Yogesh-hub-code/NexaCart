@@ -1,3 +1,4 @@
+@import 'leaflet/dist/leaflet.css';
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -7,7 +8,6 @@
 html {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   scroll-behavior: smooth;
-  /* DO NOT set overflow-x:hidden here — it breaks pinch-zoom */
 }
 
 body {
@@ -22,23 +22,217 @@ app-root {
   display: block;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0f0f14;
-}
-::-webkit-scrollbar-thumb {
-  background: #6366f1;
-  border-radius: 3px;
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0f0f14; }
+::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 3px; }
 
-::selection {
-  background: rgba(99, 102, 241, 0.4);
-  color: #fff;
-}
-
-
+::selection { background: rgba(99, 102, 241, 0.4); color: #fff; }
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* ============================================================
+   NG-SELECT — DARK ADMIN THEME
+   (Must be global because dropdown panel is appended to body)
+   ============================================================ */
+
+.ng-select {
+  width: 100%;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* ── Container (the visible input box) ── */
+.ng-select .ng-select-container {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 12px !important;
+  min-height: 46px !important;
+  color: #f1f5f9 !important;
+  transition: all 0.2s ease;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.ng-select.ng-select-focused .ng-select-container,
+.ng-select.ng-select-opened .ng-select-container {
+  border-color: rgba(99,102,241,0.5) !important;
+  background: rgba(99,102,241,0.04) !important;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.1) !important;
+}
+
+/* ── Value & placeholder ── */
+.ng-select .ng-value-container {
+  padding: 0 12px !important;
+  align-items: center !important;
+}
+
+.ng-select .ng-value {
+  display: flex !important;
+  align-items: center !important;
+  background: rgba(99,102,241,0.15) !important;
+  border: 1px solid rgba(99,102,241,0.25) !important;
+  border-radius: 8px !important;
+  padding: 3px 10px !important;
+  font-size: 0.88rem !important;
+  font-weight: 500 !important;
+  color: #c4b5fd !important;
+  max-width: 100% !important;
+}
+
+.ng-select .ng-value-label {
+  color: #c4b5fd !important;
+  font-size: 0.88rem !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* single select — no pill, just plain text */
+.ng-select.ng-select-single .ng-value {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.ng-select.ng-select-single .ng-value-label {
+  color: #f1f5f9 !important;
+  font-size: 0.92rem !important;
+  font-weight: 500 !important;
+}
+
+.ng-select .ng-placeholder {
+  color: #4b5563 !important;
+  font-size: 0.92rem !important;
+}
+
+/* ── Search input inside container ── */
+.ng-select .ng-input > input {
+  color: #f1f5f9 !important;
+  font-family: inherit !important;
+  font-size: 0.92rem !important;
+  caret-color: #a5b4fc;
+}
+
+/* ── Dropdown arrow ── */
+.ng-select .ng-arrow-wrapper {
+  padding-right: 10px;
+}
+
+.ng-select .ng-arrow {
+  border-color: #6b7280 transparent transparent !important;
+  border-width: 5px 4px 0 !important;
+}
+
+.ng-select.ng-select-opened .ng-arrow {
+  border-color: transparent transparent #a5b4fc !important;
+  border-width: 0 4px 5px !important;
+}
+
+/* ── Clear button ── */
+.ng-select .ng-clear-wrapper {
+  color: #6b7280;
+}
+
+.ng-select .ng-clear-wrapper:hover .ng-clear {
+  color: #f43f5e;
+}
+
+/* ── Dropdown panel (appended to body!) ── */
+.ng-dropdown-panel {
+  background: #0d0d16 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 14px !important;
+  margin-top: 6px !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.6) !important;
+  overflow: hidden;
+  z-index: 9999 !important;
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items {
+  max-height: 240px;
+}
+
+/* ── Options ── */
+.ng-dropdown-panel .ng-option {
+  background: transparent !important;
+  color: #d1d5db !important;
+  padding: 11px 16px !important;
+  font-size: 0.9rem !important;
+  font-family: "Inter", system-ui, sans-serif !important;
+  transition: background 0.15s ease, color 0.15s ease;
+  border-bottom: 1px solid rgba(255,255,255,0.03) !important;
+  cursor: pointer;
+}
+
+.ng-dropdown-panel .ng-option:last-child {
+  border-bottom: none !important;
+}
+
+/* Hover */
+.ng-dropdown-panel .ng-option.ng-option-marked {
+  background: rgba(99,102,241,0.12) !important;
+  color: #a5b4fc !important;
+}
+
+/* Selected */
+.ng-dropdown-panel .ng-option.ng-option-selected,
+.ng-dropdown-panel .ng-option.ng-option-selected.ng-option-marked {
+  background: rgba(99,102,241,0.2) !important;
+  color: #c4b5fd !important;
+  font-weight: 600 !important;
+}
+
+/* ── Search box inside dropdown ── */
+.ng-dropdown-panel .ng-dropdown-header {
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  padding: 10px 12px !important;
+}
+
+/* No items / loading */
+.ng-dropdown-panel .ng-option.ng-option-disabled {
+  color: #4b5563 !important;
+}
+
+/* Disabled select */
+.ng-select.ng-select-disabled .ng-select-container {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* ============================================================
+   ADMIN SHARED BUTTON STYLES
+   (needed globally for projected content in admin-layout)
+   ============================================================ */
+
+.ad-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Inter", system-ui, sans-serif;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.ad-btn-primary svg { width: 15px; height: 15px; }
+
+.ad-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99,102,241,0.4);
+}
+
+.ad-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

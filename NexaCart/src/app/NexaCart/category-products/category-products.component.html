@@ -1,0 +1,211 @@
+<div class="cp-app-shell">
+
+  <!-- TOP HEADER NAVBAR -->
+  <header class="cp-navbar">
+    <div class="cp-nav-container">
+
+      <!-- Location Selector -->
+      <div class="cp-nav-location" (click)="showLocation = true">
+        <span class="cp-pin-icon">📍</span>
+        <div class="cp-loc-info">
+          <small>Deliver to</small>
+          <strong>{{ currentLocation || 'Select Location' }}</strong>
+        </div>
+      </div>
+
+      <!-- Brand Logo -->
+      <a class="cp-logo" routerLink="/">
+        <span class="cp-logo-badge">N</span>
+        <span class="cp-logo-text">Nexa<em>Cart</em></span>
+      </a>
+
+      <!-- Quick Search Bar -->
+      <div class="cp-search-bar" [class.focused]="searchFocused">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cp-search-icon">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Search in {{ categoryName }}..."
+          (focus)="searchFocused = true" (blur)="searchFocused = false" />
+      </div>
+
+      <!-- User Nav Actions -->
+      <div class="cp-nav-right">
+        <button type="button" class="cp-icon-btn" (click)="openCart()">
+          🛒 <span class="cp-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+        </button>
+
+        <div class="cp-profile-wrap">
+          <button *ngIf="!isAuthenticated" type="button" class="cp-login-btn" (click)="openLoginModal()">Sign
+            In</button>
+          <div *ngIf="isAuthenticated" class="cp-user-badge">
+            <span>{{ username | slice:0:1 | uppercase }}</span>
+            <strong>{{ username }}</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CATEGORY CONTENT AREA -->
+  <div class="cp-body-wrapper">
+
+    <!-- BREADCRUMB BAR -->
+    <div class="cp-breadcrumb-strip">
+      <a routerLink="/">Home</a> ➔ <span>Categories</span> ➔ <strong>{{ categoryName }}</strong>
+    </div>
+
+    <div class="cp-main-grid">
+
+      <!-- LEFT COLUMN: STICKY FILTERS PANEL -->
+      <aside class="cp-sidebar-filters">
+        <div class="cp-filter-header">
+          <h3>Filters</h3>
+          <button type="button" (click)="clearFilters()">Reset All</button>
+        </div>
+
+        <!-- Price Range Slider Filter -->
+        <div class="cp-filter-group">
+          <label class="cp-group-title">MAX PRICE</label>
+          <div class="cp-price-val">₹{{ maxPrice | number }}</div>
+          <input type="range" min="100" max="999999" step="1000" [(ngModel)]="maxPrice" />
+          <div class="cp-range-ends">
+            <span>₹100</span>
+            <span>₹9,99,999</span>
+          </div>
+        </div>
+
+        <!-- Rating Filter -->
+        <div class="cp-filter-group">
+          <label class="cp-group-title">CUSTOMER RATING</label>
+          <div class="cp-radio-list">
+            <label><input type="radio" name="rating" [value]="0" [(ngModel)]="selectedRating" /> Any Rating</label>
+            <label><input type="radio" name="rating" [value]="4" [(ngModel)]="selectedRating" /> 4.0★ & Above</label>
+            <label><input type="radio" name="rating" [value]="4.5" [(ngModel)]="selectedRating" /> 4.5★ & Above</label>
+          </div>
+        </div>
+
+        <!-- Brand Checklist -->
+        <div class="cp-filter-group" *ngIf="brands.length > 0">
+          <label class="cp-group-title">BRANDS</label>
+          <div class="cp-brand-list">
+            <label *ngFor="let b of brands">
+              <input type="radio" name="brand" [value]="b" [(ngModel)]="selectedBrand" /> {{ b }}
+            </label>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT COLUMN: PRODUCT FEED -->
+      <section class="cp-feed-content">
+
+        <!-- HORIZONTAL BRAND SCROLL BAR -->
+        <div class="cp-brand-strip" *ngIf="categoryBrands.length > 0">
+          <span class="cp-strip-title">EXPLORE TOP BRANDS</span>
+          <div class="cp-scroll-container">
+
+            <!-- All Brands Chip -->
+            <div class="cp-brand-chip" [class.active]="selectedBrand === 'All'" (click)="selectBrandByName('All')">
+              <div class="cp-circle cp-circle-all">ALL</div>
+              <span>All Brands</span>
+            </div>
+
+            <!-- Individual Brand Circular Chips -->
+            <div class="cp-brand-chip" *ngFor="let brand of categoryBrands"
+              [class.active]="selectedBrand === brand.brandName" (click)="selectBrandByName(brand.brandName)">
+
+              <div class="cp-circle">
+                <!-- Loads directly from assets/brands/{brandName}.png -->
+                <img [src]="getBrandLogoUrl(brand.brandName)" [alt]="brand.brandName"
+                  (error)="$any($event.target).style.display = 'none'; $any($event.target).nextElementSibling.style.display = 'inline'" />
+
+                <!-- Fallback initials badge shown if image file is missing in assets -->
+                <span style="display: none;">{{ getInitial(brand.brandName) }}</span>
+              </div>
+
+              <span>{{ brand.brandName }}</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- FEED CONTROLS BAR -->
+        <div class="cp-feed-bar">
+          <div class="cp-feed-info">
+            <h2>{{ categoryName }}</h2>
+            <span class="cp-count-badge">{{ filteredProducts.length }} Products</span>
+          </div>
+
+          <div class="cp-sort-box">
+            <label>Sort By:</label>
+            <select [(ngModel)]="sortBy">
+              <option value="">Default Popularity</option>
+              <option value="low">Price: Low to High</option>
+              <option value="high">Price: High to Low</option>
+              <option value="rating">Top Rated</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- LOADER -->
+        <div class="cp-loading-view" *ngIf="isLoading">
+          <div class="cp-spinner"></div>
+          <p>Loading {{ categoryName }} items...</p>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div class="cp-empty-view" *ngIf="!isLoading && filteredProducts.length === 0">
+          <h3>No products match your criteria</h3>
+          <p>Try clearing active filters to see all available inventory.</p>
+          <button type="button" class="cp-btn-reset" (click)="clearFilters()">Clear Filters</button>
+        </div>
+
+        <!-- PRODUCT GRID -->
+        <div class="cp-products-grid" *ngIf="!isLoading && filteredProducts.length > 0">
+          <app-product-card *ngFor="let product of filteredProducts" [product]="product"
+            [isWishlisted]="wishlistIds.includes(product.productId)" (click)="navigateToProduct(product.productId)"
+            (addToCart)="addToCart($event)" (buyNow)="buyNow($event)" (wishlistToggled)="toggleWishlist($event)">
+          </app-product-card>
+        </div>
+
+      </section>
+
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div class="cp-modal-overlay" *ngIf="showAuthModal" (click)="closeAuthModal()">
+    <div class="cp-modal-card" (click)="$event.stopPropagation()">
+      <button class="cp-modal-close" (click)="closeAuthModal()">✕</button>
+
+      <!-- LOGIN -->
+      <div *ngIf="!isSignUpMode">
+        <h3>Sign In</h3>
+        <form (ngSubmit)="handleAuth()">
+          <input type="email" [(ngModel)]="email" name="email" placeholder="Email Address" required />
+          <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required />
+          <button type="submit" [disabled]="isLoading">Sign In</button>
+        </form>
+        <p *ngIf="authMessage" class="cp-error">{{ authMessage }}</p>
+        <p class="cp-switch">New to NexaCart? <a (click)="switchToSignUp()">Create an Account</a></p>
+      </div>
+
+      <!-- SIGN UP -->
+      <div *ngIf="isSignUpMode">
+        <h3>Create Account</h3>
+        <form (ngSubmit)="handleRegister()">
+          <input type="text" [(ngModel)]="firstName" name="firstName" placeholder="First Name" required />
+          <input type="text" [(ngModel)]="lastName" name="lastName" placeholder="Last Name" required />
+          <input type="email" [(ngModel)]="registerEmail" name="registerEmail" placeholder="Email Address" required />
+          <input type="password" [(ngModel)]="registerPassword" name="registerPassword" placeholder="Password"
+            required />
+          <button type="submit" [disabled]="isLoading">Create Account</button>
+        </form>
+        <p *ngIf="authMessage" class="cp-error">{{ authMessage }}</p>
+        <p class="cp-switch">Already have an account? <a (click)="switchToLogin()">Sign In</a></p>
+      </div>
+    </div>
+  </div>
+
+</div>

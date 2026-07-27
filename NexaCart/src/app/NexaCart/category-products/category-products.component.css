@@ -1,0 +1,276 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.cp-app-shell {
+  background-color: #f1f3f6;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #212121;
+}
+
+/* NAVBAR */
+.cp-navbar {
+  background-color: #2874f0;
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.cp-nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cp-nav-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.12);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cp-loc-info small { display: block; font-size: 0.65rem; color: #ffe500; }
+.cp-loc-info strong { font-size: 0.8rem; }
+
+.cp-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #fff; }
+.cp-logo-badge { width: 32px; height: 32px; background: #ffe500; color: #2874f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+.cp-logo-text { font-size: 1.2rem; font-weight: 800; }
+.cp-logo-text em { color: #ffe500; font-style: normal; }
+
+.cp-search-bar { flex: 1; max-width: 480px; display: flex; align-items: center; background: #fff; padding: 0 12px; border-radius: 4px; }
+.cp-search-bar input { flex: 1; height: 36px; border: none; outline: none; font-size: 0.88rem; }
+.cp-search-icon { width: 18px; height: 18px; color: #2874f0; margin-right: 8px; }
+
+.cp-nav-right { display: flex; align-items: center; gap: 16px; margin-left: auto; }
+.cp-icon-btn { position: relative; background: rgba(255,255,255,0.15); border: none; padding: 8px 12px; border-radius: 4px; color: #fff; cursor: pointer; }
+.cp-badge { position: absolute; top: -5px; right: -5px; background: #ff9f00; color: #fff; border-radius: 50%; padding: 2px 6px; font-size: 0.65rem; font-weight: 800; }
+
+.cp-login-btn { background: #fff; color: #2874f0; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 700; cursor: pointer; }
+.cp-user-badge { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; }
+.cp-user-badge span { width: 28px; height: 28px; background: #ffe500; color: #2874f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+/* MAIN CONTAINER LAYOUT */
+.cp-body-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 20px 60px;
+}
+
+.cp-breadcrumb-strip {
+  font-size: 0.8rem;
+  color: #878787;
+  margin-bottom: 12px;
+}
+.cp-breadcrumb-strip a { color: #2874f0; text-decoration: none; font-weight: 600; }
+
+.cp-main-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* SIDEBAR FILTERS */
+.cp-sidebar-filters {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 16px;
+  position: sticky;
+  top: 80px;
+}
+
+.cp-filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+}
+.cp-filter-header h3 { margin: 0; font-size: 1rem; font-weight: 800; }
+.cp-filter-header button { background: none; border: none; color: #2874f0; font-weight: 700; font-size: 0.78rem; cursor: pointer; }
+
+.cp-filter-group {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.cp-group-title { font-size: 0.7rem; font-weight: 800; color: #878787; display: block; margin-bottom: 8px; }
+.cp-price-val { font-size: 1.1rem; font-weight: 800; color: #2874f0; margin-bottom: 6px; }
+.cp-filter-group input[type="range"] { width: 100%; accent-color: #2874f0; cursor: pointer; }
+.cp-range-ends { display: flex; justify-content: space-between; font-size: 0.7rem; color: #878787; }
+
+.cp-radio-list, .cp-brand-list { display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; font-size: 0.85rem; }
+
+/* FEED CONTENT (RIGHT SIDE) */
+.cp-feed-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* BRAND SCROLL STRIP */
+.cp-brand-strip {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 12px 16px;
+}
+.cp-strip-title { font-size: 0.7rem; font-weight: 800; color: #878787; display: block; margin-bottom: 10px; }
+.cp-scroll-container { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 4px; }
+
+.cp-brand-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.cp-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+  background: #f8f9fa;
+  overflow: hidden;
+}
+.cp-circle img { width: 100%; height: 100%; object-fit: cover; }
+.cp-circle-all { background: #e8f2fe; color: #2874f0; border-color: #2874f0; }
+.cp-brand-chip span { font-size: 0.75rem; font-weight: 600; color: #666; }
+.cp-brand-chip.active .cp-circle { border-color: #2874f0; box-shadow: 0 0 0 3px rgba(40,116,240,0.2); }
+.cp-brand-chip.active span { color: #2874f0; font-weight: 800; }
+
+/* FEED HEADER */
+.cp-feed-bar {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cp-feed-info { display: flex; align-items: baseline; gap: 10px; }
+.cp-feed-info h2 { margin: 0; font-size: 1.2rem; font-weight: 800; }
+.cp-count-badge { font-size: 0.8rem; color: #878787; }
+
+.cp-sort-box { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.cp-sort-box select { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-weight: 600; outline: none; }
+
+/* PRODUCTS GRID */
+.cp-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+/* LOADING & EMPTY STATES */
+.cp-loading-view, .cp-empty-view {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.cp-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #2874f0;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.cp-btn-reset {
+  background: #2874f0;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* AUTH MODAL */
+.cp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.cp-modal-card {
+  background: #fff;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 380px;
+  padding: 24px;
+  position: relative;
+}
+
+.cp-modal-close { position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+.cp-modal-card form { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.cp-modal-card input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
+.cp-modal-card button[type="submit"] { background: #fb641b; color: #fff; border: none; padding: 12px; font-weight: 800; border-radius: 4px; cursor: pointer; }
+.cp-error { color: #d32f2f; font-size: 0.8rem; margin-top: 8px; }
+.cp-switch { font-size: 0.8rem; color: #666; margin-top: 12px; text-align: center; }
+.cp-switch a { color: #2874f0; font-weight: 700; cursor: pointer; }
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 900px) {
+  .cp-main-grid { grid-template-columns: 1fr; }
+  .cp-sidebar-filters { position: static; }
+}
+.cp-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.cp-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Keeps brand logos aspect ratio intact */
+  padding: 6px;       /* Adds padding so logos don't touch the circle border */
+}
+
+.cp-brand-chip.active .cp-circle {
+  border-color: #2874f0;
+  box-shadow: 0 0 0 3px rgba(40, 116, 240, 0.2);
+}
