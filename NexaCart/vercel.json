@@ -1,3 +1,9 @@
 {
-  "outputDirectory": "dist/my-app"
+  "outputDirectory": "dist/my-app",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
