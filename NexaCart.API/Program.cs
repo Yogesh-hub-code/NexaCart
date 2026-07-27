@@ -14,9 +14,18 @@ using NexaCart.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Ensure the app binds to Render's dynamic PORT variable
+// 1. Ensure the app binds to Render's dynamic PORT variable
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
+// 2. Disable reloadOnChange to prevent inotify limit crashes on Linux/Render
+builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+{
+  foreach (var source in config.Sources.OfType<FileConfigurationSource>())
+  {
+    source.ReloadOnChange = false;
+  }
+});
 
 builder.Services.AddControllers();
 
