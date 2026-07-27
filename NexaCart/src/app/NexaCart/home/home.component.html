@@ -4,6 +4,23 @@
   <header class="nc-nav">
     <div class="nc-nav-inner">
 
+      <!-- Location Selector -->
+      <div class="nc-location" (click)="showLocation=true">
+        <div class="nc-location-icon">📍</div>
+        <div class="nc-location-content">
+          <span class="nc-location-label">Delivering to</span>
+          <span class="nc-location-value">{{ currentLocation || 'Select Location' }}</span>
+        </div>
+        <div class="nc-location-arrow">▾</div>
+      </div>
+
+      <!-- Location Picker Overlay -->
+      <div class="location-overlay" *ngIf="showLocation">
+        <app-location-picker (close)="showLocation = false" (locationSelected)="onLocationSelected($event)">
+        </app-location-picker>
+      </div>
+
+      <!-- Logo -->
       <a class="nc-logo" href="#">
         <div class="nc-logo-icon">
           <span>N</span>
@@ -12,6 +29,7 @@
         <span class="nc-logo-text">Nexa<em>Cart</em></span>
       </a>
 
+      <!-- Search Input -->
       <div class="nc-search" [class.nc-search--focus]="searchFocused">
         <svg class="nc-search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8" />
@@ -22,45 +40,33 @@
         <kbd class="nc-search-kbd">⌘K</kbd>
       </div>
 
+      <!-- Nav Links -->
       <nav class="nc-nav-links">
         <div class="nc-category-menu">
-
-          <button type="button">
-            Categories
-          </button>
-
+          <button type="button">Categories</button>
           <div class="nc-category-dropdown">
-
             <button *ngFor="let category of categories" (click)="selectCategory(category.categoryId)">
-
               {{category.name}}
-
             </button>
-
           </div>
-
         </div>
+
         <button type="button" (click)="showDeals()">
           Deals
           <span class="nc-pulse-dot"></span>
         </button>
+
         <div class="nc-category-menu">
-
-          <button type="button">
-            Brands
-          </button>
-
+          <button type="button">Brands</button>
           <div class="nc-category-dropdown">
-
             <button *ngFor="let brand of brandss" (click)="selectBrand(brand.brandId)">
               {{ brand.brandName }}
             </button>
-
           </div>
-
         </div>
       </nav>
 
+      <!-- Nav Actions (Cart & Auth Cluster) -->
       <div class="nc-nav-actions">
         <button type="button" class="nc-icon-btn" (click)="openCart()" aria-label="Cart">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -71,10 +77,10 @@
           <span class="nc-cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
         </button>
 
-        <!-- Profile / Auth cluster -->
+        <!-- Profile / Auth Trigger -->
         <div class="nc-profile" (mouseenter)="showProfileMenu = true" (mouseleave)="showProfileMenu = false">
 
-          <!-- Not logged in -->
+          <!-- Guest State -->
           <button *ngIf="!isAuthenticated" type="button" class="nc-auth-btn" (click)="openLoginModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nc-auth-ico">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -83,23 +89,21 @@
             <span>Sign In</span>
           </button>
 
-          <!-- Logged in -->
+          <!-- Authenticated State -->
           <button *ngIf="isAuthenticated" type="button" class="nc-profile-trigger"
             [class.nc-profile-trigger--open]="showProfileMenu" aria-label="Account menu">
             <span class="nc-profile-avatar">{{ username | slice:0:1 | uppercase }}</span>
             <span class="nc-profile-name">{{ username }}</span>
-            <svg class="nc-profile-caret" [class.nc-profile-caret--up]="showProfileMenu" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2.5">
+            <svg class="nc-profile-caret" [class.nc-profile-caret--up]="showProfileMenu" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="m6 9 6 6 6-6" />
             </svg>
           </button>
 
-          <!-- Dropdown menu — always shown on hover, content conditional -->
+          <!-- Account Dropdown Menu -->
           <div class="nc-profile-menu" [class.nc-profile-menu--open]="showProfileMenu">
-            <!-- Arrow tip -->
             <div class="nc-menu-arrow"></div>
 
-            <!-- Header — only when logged in -->
             <div class="nc-menu-header" *ngIf="isAuthenticated">
               <div class="nc-menu-avatar">{{ username | slice:0:1 | uppercase }}</div>
               <div class="nc-menu-user-info">
@@ -117,7 +121,6 @@
 
             <div class="nc-menu-divider" *ngIf="isAuthenticated"></div>
 
-            <!-- Menu items — always visible -->
             <div class="nc-menu-items">
               <button type="button" class="nc-menu-item"
                 (click)="!isAuthenticated ? openLoginModal() : navigateToProfile()">
@@ -156,8 +159,9 @@
                   </svg>
                 </span>
                 <span class="nc-menu-item-label">Wishlist</span>
-                <span class="nc-menu-item-badge nc-menu-item-badge--purple" *ngIf="wishlistIds.length > 0">{{
-                  wishlistIds.length }}</span>
+                <span class="nc-menu-item-badge nc-menu-item-badge--purple" *ngIf="wishlistIds.length > 0">
+                  {{ wishlistIds.length }}
+                </span>
                 <svg class="nc-menu-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="m9 18 6-6-6-6" />
                 </svg>
@@ -180,7 +184,6 @@
               </button>
             </div>
 
-            <!-- Sign Out — only when logged in -->
             <ng-container *ngIf="isAuthenticated">
               <div class="nc-menu-divider"></div>
               <button type="button" class="nc-menu-logout" (click)="handleLogout()">
@@ -200,89 +203,152 @@
     </div>
   </header>
 
- <!-- ═══════════════════════ HERO SECTION ═══════════════════════ -->
-<section class="nc-hero" aria-label="Featured Collection Hero">
-  <div class="nc-hero-bg">
-    <div class="nc-orb nc-orb--1"></div>
-    <div class="nc-orb nc-orb--2"></div>
-    <div class="nc-orb nc-orb--3"></div>
-    <div class="nc-grid-lines"></div>
-    
-    <!-- Image Overlay Component -->
-    <div class="nc-hero-media">
-      <img 
-        src="/assets/images/hero-drop-04.webp" 
-        alt="Model wearing oversized cyber-streetwear jacket in a neon studio" 
-        class="nc-hero-img"
-      />
-      <div class="nc-hero-overlay"></div>
-    </div>
-  </div>
+  <!-- ═══════════════════════ FLIPKART HERO SECTION ═══════════════════════ -->
+  <section class="fk-hero" aria-label="Deals of the Day Hero">
 
-  <div class="nc-hero-content">
-    <div class="nc-hero-badge">
-      <span class="nc-pulse-dot nc-pulse-dot--lg" aria-hidden="true"></span>
-      DROP 004 // LIMITED QUANTITY
-    </div>
+    <!-- LEFT PANEL: DEALS OF THE DAY WITH TIMER & GRID -->
+    <div class="fk-deals-panel">
+      <div class="fk-deals-header">
+        <div class="fk-header-title">
+          <div class="fk-title-with-mascot">
+            <span class="fk-cartoon-icon animate-bounce">⚡</span>
+            <h2>Deals of the Day</h2>
+          </div>
+          <div class="fk-timer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="fk-timer-icon">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span class="fk-time-text">
+              {{ formatTime(timerHours) }}h {{ formatTime(timerMinutes) }}m {{ formatTime(timerSeconds) }}s Left
+            </span>
+          </div>
+        </div>
+        <button type="button" class="fk-view-all-btn" (click)="focusCategoryPanel()">View All ➔</button>
+      </div>
 
-    <h1 class="nc-hero-title">
-      Architectural<br>
-      <span class="nc-gradient-text">Streetwear Futures</span>
-    </h1>
+      <!-- DYNAMIC PRODUCT DEALS GRID -->
+      <div class="fk-products-grid" *ngIf="dealProducts.length > 0">
+        <div class="fk-product-card cartoon-hover" *ngFor="let product of dealProducts; let i = index"
+          (click)="navigateToProduct(product.productId)">
 
-    <p class="nc-hero-sub">
-      Heavyweight French terry, technical silhouettes, and precision tailoring built for modern urban environments.
-    </p>
+          <span class="fk-offer-badge cartoon-badge">
+            {{ funBadges[i % funBadges.length].icon }} {{ product.discount || 20 }}% OFF
+          </span>
 
-    <div class="nc-hero-cta">
-      <button type="button" class="nc-btn-primary" (click)="focusCategoryPanel()">
-        <span>Shop Drop 004</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg>
-      </button>
-      <button type="button" class="nc-btn-ghost" (click)="showDeals()">View Lookbook</button>
-    </div>
+          <div class="fk-card-img">
+            <img [src]="getImageUrl(product.imageUrl)" [alt]="product.name"
+              (error)="$any($event.target).src = 'https://via.placeholder.com/400x300'" />
+            <span class="fk-floating-sparkle">✨</span>
+          </div>
 
-    <div class="nc-hero-stats">
-      <div class="nc-stat"><strong>100%</strong><span>Organic Cotton</span></div>
-      <div class="nc-stat-div"></div>
-      <div class="nc-stat"><strong>4.9★</strong><span>12k+ Reviews</span></div>
-      <div class="nc-stat-div"></div>
-      <div class="nc-stat"><strong>48H</strong><span>Express Shipping</span></div>
-    </div>
-  </div>
+          <h3 class="fk-product-name" [title]="product.name">{{ product.name }}</h3>
+          <p class="fk-product-price">From ₹{{ product.price | number }}</p>
+          <span class="fk-brand-tag">{{ product.brand || product.category || 'Featured' }}</span>
+        </div>
+      </div>
 
-  <!-- Interactive Floating Trust & Selling Points -->
-  <div class="nc-hero-cards">
-    <div class="nc-hero-card nc-hero-card--a nc-float-a">
-      <div class="nc-hc-icon">⚡</div>
-      <div>
-        <h4>Worldwide Dispatch</h4>
-        <p>Duty-free checkout</p>
+      <!-- SKELETON LOADING FALLBACK -->
+      <div class="fk-products-grid" *ngIf="dealProducts.length === 0">
+        <div class="fk-product-card fk-skeleton-card" *ngFor="let item of [1,2,3,4]">
+          <div class="fk-skeleton-box fk-skeleton-img"></div>
+          <div class="fk-skeleton-box fk-skeleton-line"></div>
+        </div>
       </div>
     </div>
-    <div class="nc-hero-card nc-hero-card--b nc-float-b">
-      <div class="nc-hc-icon">🔄</div>
-      <div>
-        <h4>Hassle-Free Exchanges</h4>
-        <p>30-day extended window</p>
-      </div>
-    </div>
-    <div class="nc-hero-card nc-hero-card--c nc-float-c">
-      <div class="nc-hc-icon">🛡️</div>
-      <div>
-        <h4>Authenticated Drops</h4>
-        <p>NFC Tag verified</p>
-      </div>
-    </div>
-  </div>
-</section>
 
-  <!-- ═══════════════════════ MAIN CONTENT ═══════════════════════ -->
+    <!-- RIGHT PANEL: FEATURED PROMO BANNER -->
+    <div class="fk-hero-banner" *ngIf="featuredHeroProduct"
+      (click)="navigateToProduct(featuredHeroProduct.productId)">
+      <div class="fk-banner-badge pulse-badge">
+        <span>🔥 SPONSORED DROP</span>
+      </div>
+
+      <img [src]="getImageUrl(featuredHeroProduct.imageUrl)" [alt]="featuredHeroProduct.name" class="fk-banner-img"
+        (error)="$any($event.target).src = 'https://via.placeholder.com/400x300'" />
+
+      <div class="fk-banner-content">
+        <span class="fk-banner-sub">BIG SAVINGS DAYS 🎉</span>
+        <h2 class="fk-banner-title">{{ featuredHeroProduct.name }}</h2>
+        <p class="fk-banner-price">Just ₹{{ featuredHeroProduct.price | number }}</p>
+        <button type="button" class="fk-banner-btn cartoon-btn">Shop Now 🚀</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════ RECOMMENDATIONS & PROMO WIDGET ═══════════════════════ -->
+  <section class="fk-widget-wrapper" *ngIf="products && products.length > 0">
+
+    <!-- TOP PROMO CARDS -->
+    <div class="fk-promo-row" *ngIf="promoProducts.length >= 3">
+      <div class="fk-promo-card fk-promo-card--gray" (click)="navigateToProduct(promoProducts[0].productId)">
+        <div class="fk-promo-text">
+          <span class="fk-brand-sub">{{ promoProducts[0].brand || 'FEATURED' }}</span>
+          <h3 class="fk-promo-title">{{ promoProducts[0].name }}</h3>
+          <span class="fk-promo-badge">Under ₹{{ promoProducts[0].price | number }}</span>
+        </div>
+        <div class="fk-promo-img">
+          <img [src]="getImageUrl(promoProducts[0].imageUrl)" [alt]="promoProducts[0].name"
+            (error)="$any($event.target).src = 'https://via.placeholder.com/400x300'" />
+        </div>
+      </div>
+
+      <div class="fk-promo-card fk-promo-card--dark" (click)="navigateToProduct(promoProducts[1].productId)">
+        <span class="fk-ad-tag">AD</span>
+        <div class="fk-promo-text">
+          <span class="fk-brand-sub">{{ promoProducts[1].brand || 'LIMITED DROP' }}</span>
+          <h3 class="fk-promo-title">{{ promoProducts[1].name }}</h3>
+          <p class="fk-promo-price">From ₹{{ promoProducts[1].price | number }}</p>
+          <span class="fk-promo-note">Special Offer</span>
+        </div>
+        <div class="fk-promo-img">
+          <img [src]="getImageUrl(promoProducts[1].imageUrl)" [alt]="promoProducts[1].name"
+            (error)="$any($event.target).src = 'https://via.placeholder.com/400x300'" />
+        </div>
+      </div>
+
+      <div class="fk-promo-card fk-promo-card--light" (click)="navigateToProduct(promoProducts[2].productId)">
+        <div class="fk-promo-text">
+          <span class="fk-brand-sub">{{ promoProducts[2].brand || 'HOT DEAL' }}</span>
+          <h3 class="fk-promo-title">{{ promoProducts[2].name }}</h3>
+          <p class="fk-promo-price">From ₹{{ promoProducts[2].price | number }}</p>
+          <span class="fk-promo-link">Shop now ➔</span>
+        </div>
+        <div class="fk-promo-img">
+          <img [src]="getImageUrl(promoProducts[2].imageUrl)" [alt]="promoProducts[2].name"
+            (error)="$any($event.target).src = 'https://via.placeholder.com/400x300'" />
+        </div>
+      </div>
+    </div>
+
+    <!-- PERSONALIZED RECOMMENDATIONS PANEL -->
+    <div class="fk-reco-panel" *ngIf="recoProducts.length > 0">
+      <h2 class="fk-reco-heading">
+        {{ username ? username : 'Guest' }}, still looking for these?
+      </h2>
+
+      <div class="fk-reco-grid">
+        <div class="fk-reco-card" *ngFor="let product of recoProducts" (click)="navigateToProduct(product.productId)">
+          <div class="fk-reco-img-wrap">
+            <img [src]="getImageUrl(product.imageUrl)" [alt]="product.name"
+              (error)="$any($event.target).src = 'https://via.placeholder.com/400x300'" />
+          </div>
+          <div class="fk-reco-details">
+            <span class="fk-reco-sub">{{ product.brand || product.category || 'Featured' }}</span>
+            <h4 class="fk-reco-title" [title]="product.name">{{ product.name }}</h4>
+            <span class="fk-reco-action">View Details</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════ MAIN PRODUCT GRID ═══════════════════════ -->
   <main class="nc-main">
 
-    <!-- Toast / Notification -->
+    <!-- Toast Notification -->
     <div class="nc-toast" [class.nc-toast--show]="authMessage">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -291,7 +357,7 @@
       {{ authMessage }}
     </div>
 
-    <!-- ── FILTERS ── -->
+    <!-- FILTERS -->
     <section class="nc-section nc-filters-section">
       <div class="nc-section-head">
         <div>
@@ -348,14 +414,14 @@
         </div>
 
         <div class="nc-filter-group">
-          <label>Price — <span class="nc-price-val">${{ maxPrice }}</span></label>
-          <input type="range" min="100" max="2500" step="50" [(ngModel)]="maxPrice" class="nc-range" />
-          <div class="nc-range-track-labels"><span>$100</span><span>$2500</span></div>
+          <label>Price — <span class="nc-price-val">₹{{ maxPrice }}</span></label>
+          <input type="range" min="100" max="999999" step="500" [(ngModel)]="maxPrice" class="nc-range" />
+          <div class="nc-range-track-labels"><span>₹100</span><span>₹9,99,999</span></div>
         </div>
       </div>
     </section>
 
-    <!-- ── BRAND SCROLL ── -->
+    <!-- BRAND SCROLL -->
     <section class="nc-section nc-brands-section">
       <div class="nc-section-head">
         <div>
@@ -371,7 +437,7 @@
       </div>
     </section>
 
-    <!-- ── TRENDING NOW ── -->
+    <!-- TRENDING NOW -->
     <section class="nc-section" [class.nc-section--hidden]="trendingProducts.length === 0">
       <div class="nc-section-head">
         <div>
@@ -380,14 +446,14 @@
         </div>
       </div>
       <div class="nc-product-grid">
-        <app-product-card *ngFor="let product of trendingProducts; let i = index" [product]="product"
-          [isWishlisted]="wishlistIds.includes(product.productId)" [animDelay]="i * 80" (addToCart)="addToCart($event)"
-          (buyNow)="buyNow($event)" (wishlistToggled)="toggleWishlist($event)">
+        <app-product-card *ngFor="let product of trendingProducts" [product]="product"
+          (click)="navigateToProduct(product.productId)" (addToCart)="addToCart($event)" (buyNow)="buyNow($event)"
+          (wishlistToggled)="toggleWishlist($event)">
         </app-product-card>
       </div>
     </section>
 
-    <!-- ── FEATURED CATEGORIES ── -->
+    <!-- FEATURED CATEGORIES -->
     <ng-container *ngFor="let section of featuredSections">
       <section class="nc-section" [class.nc-section--hidden]="getProductsByCategory(section.category).length === 0">
         <div class="nc-section-head">
@@ -400,13 +466,14 @@
         <div class="nc-product-grid">
           <app-product-card *ngFor="let product of getProductsByCategory(section.category); let i = index"
             [product]="product" [isWishlisted]="wishlistIds.includes(product.productId)" [animDelay]="i * 80"
-            (addToCart)="addToCart($event)" (buyNow)="buyNow($event)" (wishlistToggled)="toggleWishlist($event)">
+            (click)="navigateToProduct(product.productId)" (addToCart)="addToCart($event)" (buyNow)="buyNow($event)"
+            (wishlistToggled)="toggleWishlist($event)">
           </app-product-card>
         </div>
       </section>
     </ng-container>
 
-    <!-- ── DEALS ── -->
+    <!-- DEALS -->
     <section class="nc-section nc-deals-section" [class.nc-section--hidden]="dealsProducts.length === 0">
       <div class="nc-deals-bg"></div>
       <div class="nc-section-head">
@@ -417,13 +484,14 @@
       </div>
       <div class="nc-product-grid">
         <app-product-card *ngFor="let product of dealsProducts; let i = index" [product]="product"
-          [isWishlisted]="wishlistIds.includes(product.productId)" [animDelay]="i * 80" (addToCart)="addToCart($event)"
-          (buyNow)="buyNow($event)" (wishlistToggled)="toggleWishlist($event)">
+          [isWishlisted]="wishlistIds.includes(product.productId)" [animDelay]="i * 80"
+          (click)="navigateToProduct(product.productId)" (addToCart)="addToCart($event)" (buyNow)="buyNow($event)"
+          (wishlistToggled)="toggleWishlist($event)">
         </app-product-card>
       </div>
     </section>
 
-    <!-- ── NEW ARRIVALS ── -->
+    <!-- NEW ARRIVALS -->
     <section class="nc-section" [class.nc-section--hidden]="newArrivalsProducts.length === 0">
       <div class="nc-section-head">
         <div>
@@ -433,8 +501,9 @@
       </div>
       <div class="nc-product-grid">
         <app-product-card *ngFor="let product of newArrivalsProducts; let i = index" [product]="product"
-          [isWishlisted]="wishlistIds.includes(product.productId)" [animDelay]="i * 80" (addToCart)="addToCart($event)"
-          (buyNow)="buyNow($event)" (wishlistToggled)="toggleWishlist($event)">
+          [isWishlisted]="wishlistIds.includes(product.productId)" [animDelay]="i * 80"
+          (click)="navigateToProduct(product.productId)" (addToCart)="addToCart($event)" (buyNow)="buyNow($event)"
+          (wishlistToggled)="toggleWishlist($event)">
         </app-product-card>
       </div>
     </section>
@@ -452,89 +521,88 @@
     </div>
   </footer>
 
-</div>
+  <!-- ═══════════════════════ AUTH MODAL ═══════════════════════ -->
+  <div class="nc-modal-overlay" *ngIf="showAuthModal" (click)="closeAuthModal()">
+    <div class="nc-modal" (click)="$event.stopPropagation()">
 
-<!-- ═══════════════════════ AUTH MODAL ═══════════════════════ -->
-<div class="nc-modal-overlay" *ngIf="showAuthModal" (click)="closeAuthModal()">
-  <div class="nc-modal" (click)="$event.stopPropagation()">
+      <button type="button" class="nc-modal-close" (click)="closeAuthModal()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
 
-    <button type="button" class="nc-modal-close" (click)="closeAuthModal()" aria-label="Close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <line x1="18" y1="6" x2="6" y2="18" />
-        <line x1="6" y1="6" x2="18" y2="18" />
-      </svg>
-    </button>
+      <!-- LOGIN -->
+      <div *ngIf="!isSignUpMode" class="nc-modal-body">
+        <div class="nc-modal-icon">🔐</div>
+        <h3>Welcome Back</h3>
+        <p class="nc-modal-sub">Sign in to your NexaCart account</p>
 
-    <!-- LOGIN -->
-    <div *ngIf="!isSignUpMode" class="nc-modal-body">
-      <div class="nc-modal-icon">🔐</div>
-      <h3>Welcome Back</h3>
-      <p class="nc-modal-sub">Sign in to your NexaCart account</p>
+        <form (ngSubmit)="handleAuth()" class="nc-form">
+          <div class="nc-field">
+            <label for="m-email">Email</label>
+            <input type="email" id="m-email" [(ngModel)]="email" name="email" required placeholder="you@example.com" />
+          </div>
+          <div class="nc-field">
+            <label for="m-pass">Password</label>
+            <input type="password" id="m-pass" [(ngModel)]="password" name="password" required placeholder="••••••••" />
+          </div>
+          <button type="submit" class="nc-btn-primary nc-btn-full" [disabled]="isLoading">
+            <span class="nc-spinner" *ngIf="isLoading"></span>
+            <span *ngIf="!isLoading">Sign In</span>
+            <span *ngIf="isLoading">Verifying…</span>
+          </button>
+        </form>
 
-      <form (ngSubmit)="handleAuth()" class="nc-form">
-        <div class="nc-field">
-          <label for="m-email">Email</label>
-          <input type="email" id="m-email" [(ngModel)]="email" name="email" required placeholder="you@example.com" />
-        </div>
-        <div class="nc-field">
-          <label for="m-pass">Password</label>
-          <input type="password" id="m-pass" [(ngModel)]="password" name="password" required placeholder="••••••••" />
-        </div>
-        <button type="submit" class="nc-btn-primary nc-btn-full" [disabled]="isLoading">
-          <span class="nc-spinner" *ngIf="isLoading"></span>
-          <span *ngIf="!isLoading">Sign In</span>
-          <span *ngIf="isLoading">Verifying…</span>
-        </button>
-      </form>
+        <p class="nc-form-msg nc-form-msg--error" *ngIf="authMessage">{{ authMessage }}</p>
 
-      <p class="nc-form-msg nc-form-msg--error" *ngIf="authMessage">{{ authMessage }}</p>
+        <p class="nc-form-switch">
+          New here?
+          <button type="button" (click)="switchToSignUp()">Create account</button>
+        </p>
+      </div>
 
-      <p class="nc-form-switch">
-        New here?
-        <button type="button" (click)="switchToSignUp()">Create account</button>
-      </p>
+      <!-- SIGN UP -->
+      <div *ngIf="isSignUpMode" class="nc-modal-body">
+        <div class="nc-modal-icon nc-modal-icon--purple">✨</div>
+        <h3>Join NexaCart</h3>
+        <p class="nc-modal-sub">Create your free account today</p>
+
+        <form (ngSubmit)="handleRegister()" class="nc-form">
+          <div class="nc-field">
+            <label for="r-fname">First Name</label>
+            <input type="text" id="r-fname" [(ngModel)]="firstName" name="firstName" required placeholder="First name" />
+          </div>
+          <div class="nc-field">
+            <label for="r-lname">Last Name</label>
+            <input type="text" id="r-lname" [(ngModel)]="lastName" name="lastName" required placeholder="Last name" />
+          </div>
+          <div class="nc-field">
+            <label for="r-email">Email</label>
+            <input type="email" id="r-email" [(ngModel)]="registerEmail" name="registerEmail" required placeholder="you@example.com" />
+          </div>
+          <div class="nc-field">
+            <label for="r-pass">Password</label>
+            <input type="password" id="r-pass" [(ngModel)]="registerPassword" name="registerPassword" required placeholder="••••••••" />
+          </div>
+          <button type="submit" class="nc-btn-primary nc-btn-full nc-btn-purple" [disabled]="isLoading">
+            <span class="nc-spinner" *ngIf="isLoading"></span>
+            <span *ngIf="!isLoading">Create Account</span>
+            <span *ngIf="isLoading">Creating…</span>
+          </button>
+        </form>
+
+        <p class="nc-form-msg" [class.nc-form-msg--error]="authMessage.includes('enter')" *ngIf="authMessage">
+          {{ authMessage }}
+        </p>
+
+        <p class="nc-form-switch">
+          Already have an account?
+          <button type="button" (click)="switchToLogin()">Sign in</button>
+        </p>
+      </div>
+
     </div>
-
-    <!-- SIGN UP -->
-    <div *ngIf="isSignUpMode" class="nc-modal-body">
-      <div class="nc-modal-icon nc-modal-icon--purple">✨</div>
-      <h3>Join NexaCart</h3>
-      <p class="nc-modal-sub">Create your free account today</p>
-
-      <form (ngSubmit)="handleRegister()" class="nc-form">
-        <div class="nc-field">
-          <label for="r-name">First Name</label>
-          <input type="text" id="r-fname" [(ngModel)]="firstName" name="firstName" required placeholder="First name" />
-        </div>
-        <div class="nc-field">
-          <label for="r-name">Last Name</label>
-          <input type="text" id="r-lname" [(ngModel)]="lastName" name="lastName" required placeholder="Last name" />
-        </div>
-        <div class="nc-field">
-          <label for="r-email">Email</label>
-          <input type="email" id="r-email" [(ngModel)]="registerEmail" name="registerEmail" required
-            placeholder="you@example.com" />
-        </div>
-        <div class="nc-field">
-          <label for="r-pass">Password</label>
-          <input type="password" id="r-pass" [(ngModel)]="registerPassword" name="registerPassword" required
-            placeholder="••••••••" />
-        </div>
-        <button type="submit" class="nc-btn-primary nc-btn-full nc-btn-purple" [disabled]="isLoading">
-          <span class="nc-spinner" *ngIf="isLoading"></span>
-          <span *ngIf="!isLoading">Create Account</span>
-          <span *ngIf="isLoading">Creating…</span>
-        </button>
-      </form>
-
-      <p class="nc-form-msg" [class.nc-form-msg--error]="authMessage.includes('enter')" *ngIf="authMessage">{{
-        authMessage }}</p>
-
-      <p class="nc-form-switch">
-        Already have an account?
-        <button type="button" (click)="switchToLogin()">Sign in</button>
-      </p>
-    </div>
-
   </div>
+
 </div>

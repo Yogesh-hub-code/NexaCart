@@ -1,0 +1,144 @@
+<div class="location-modal">
+
+  <!-- Header -->
+  <div class="location-header">
+
+    <h3>Select Delivery Location</h3>
+
+    <button
+      class="close-btn"
+      (click)="closePopup()">
+      ✕
+    </button>
+
+  </div>
+
+  <!-- Search -->
+  <div class="search-section">
+
+    <div class="search-box">
+
+      <span class="search-icon">
+        🔍
+      </span>
+
+      <input
+        type="text"
+        placeholder="Search area, street or landmark"
+        [(ngModel)]="searchText"
+        (input)="searchSuggestions()"
+        (keyup.enter)="searchLocation()"
+        autocomplete="off">
+
+    </div>
+
+    <!-- Suggestions -->
+
+    <div
+      class="suggestions"
+      *ngIf="showSuggestions && suggestions.length">
+
+      <div
+        class="suggestion-item"
+        *ngFor="let item of suggestions"
+        (click)="selectSuggestion(item)">
+
+        <div class="suggestion-icon">
+
+          📍
+
+        </div>
+
+        <div class="suggestion-content">
+
+          <div class="suggestion-title">
+
+            {{ item.properties.address_line1 }}
+
+          </div>
+
+          <div class="suggestion-address">
+
+            {{ item.properties.formatted }}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Current Location -->
+
+  <div
+    class="current-location"
+    (click)="getCurrentLocation()">
+
+    <div class="current-icon">
+
+      📡
+
+    </div>
+
+    <div class="current-content">
+
+      <h4>Use Current Location</h4>
+
+      <span>Detect automatically</span>
+
+    </div>
+
+  </div>
+
+  <!-- Selected Address -->
+
+  <div
+    class="selected-location"
+    *ngIf="selectedLocation">
+
+    <div class="selected-icon">
+
+      📍
+
+    </div>
+
+    <div class="selected-content">
+
+      <strong>
+
+        {{ selectedLocation }}
+
+      </strong>
+
+      <span>
+
+        Delivery Address
+
+      </span>
+
+    </div>
+
+  </div>
+
+  <!-- Map -->
+
+  <div id="map"></div>
+
+  <!-- Footer -->
+
+  <div class="footer">
+
+    <button
+      class="deliver-btn"
+      (click)="deliverHere()">
+
+      Deliver Here
+
+    </button>
+
+  </div>
+
+</div>

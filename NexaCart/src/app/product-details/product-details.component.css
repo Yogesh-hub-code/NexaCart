@@ -1,0 +1,371 @@
+:host {
+  display: block;
+  width: 100%;
+  background-color: #f1f3f6;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Page Container */
+.pdp-wrapper {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 16px 20px 60px;
+}
+
+/* Breadcrumbs */
+.pdp-breadcrumb {
+  font-size: 0.82rem;
+  color: #878787;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pdp-breadcrumb a {
+  color: #2874f0;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.pdp-breadcrumb .sep {
+  color: #878787;
+}
+
+.pdp-breadcrumb .current {
+  color: #212121;
+  font-weight: 700;
+}
+
+/* Main Unified Container Box */
+.pdp-main-card {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+}
+
+/* Dual Column Layout */
+.pdp-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 36px;
+  align-items: start;
+}
+
+/* Left Column */
+.pdp-left {
+  position: sticky;
+  top: 80px;
+}
+
+.main-image {
+  width: 100%;
+  height: 400px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.main-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.pdp-thumbnails {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.pdp-thumb {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 4px;
+  cursor: pointer;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.pdp-thumb.active {
+  border-color: #2874f0;
+  box-shadow: 0 0 0 2px rgba(40, 116, 240, 0.2);
+}
+
+.pdp-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.cart-btn, .buy-btn {
+  padding: 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cart-btn:hover, .buy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cart-btn {
+  background: #ff9f00;
+  color: #ffffff;
+}
+
+.buy-btn {
+  background: #fb641b;
+  color: #ffffff;
+}
+
+/* Right Column */
+.pdp-brand {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #878787;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pdp-right h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #212121;
+  margin: 4px 0 12px 0;
+  line-height: 1.25;
+}
+
+.rating-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.rating-box {
+  background: #388e3c;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.rating-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #878787;
+}
+
+.assured-badge {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #2874f0;
+  background: #e8f2fe;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Pricing Section */
+.price-section {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border: 1px solid #f0f0f0;
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.price-section h2 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #212121;
+  margin: 0;
+}
+
+.price-section .mrp {
+  font-size: 1.1rem;
+  color: #878787;
+  text-decoration: line-through;
+}
+
+.price-section .discount {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #388e3c;
+}
+
+.tax-note {
+  font-size: 0.78rem;
+  color: #878787;
+  display: block;
+  margin-top: 4px;
+}
+
+.product-description {
+  font-size: 0.9rem;
+  color: #555555;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* Offers Section */
+.offers-section {
+  margin-bottom: 20px;
+}
+
+.offers-section h3, .delivery-box h3, .specs-section h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #212121;
+  margin-bottom: 8px;
+}
+
+.offers-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.offers-section li {
+  font-size: 0.85rem;
+  color: #333333;
+  margin-bottom: 6px;
+}
+
+/* Delivery Options */
+.delivery-box {
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.pincode-wrap {
+  display: flex;
+  gap: 8px;
+  max-width: 320px;
+  margin-top: 8px;
+}
+
+.pincode-wrap input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.pincode-wrap button {
+  background: #2874f0;
+  color: #ffffff;
+  border: none;
+  padding: 0 16px;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delivery-status {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #388e3c;
+  margin-top: 8px;
+}
+
+.delivery-default {
+  font-size: 0.82rem;
+  color: #212121;
+  display: block;
+  margin-top: 8px;
+}
+
+/* Specifications Table */
+.specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.specs-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.88rem;
+}
+
+.spec-name {
+  color: #878787;
+  font-weight: 600;
+  width: 30%;
+}
+
+.spec-value {
+  color: #212121;
+  font-weight: 500;
+}
+
+/* Loading Spinner */
+.pdp-loader-box {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 80px 20px;
+  text-align: center;
+  max-width: 1320px;
+  margin: 20px auto;
+}
+
+.pdp-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #2874f0;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px) {
+  .pdp-grid {
+    grid-template-columns: 1fr;
+  }
+  .pdp-left {
+    position: static;
+  }
+}

@@ -91,6 +91,27 @@
 
   </div>
 
+  <!-- Brand -->
+  <div class="ad-field">
+
+    <label>
+      Brand
+      <span class="ad-required">*</span>
+    </label>
+
+    <ng-select
+      [(ngModel)]="brandId"
+      name="brandId"
+      placeholder="Select a brand"
+      [searchable]="true"
+      [clearable]="false"
+      bindLabel="brandName"
+      bindValue="brandId"
+      [items]="brands">
+    </ng-select>
+
+  </div>
+
   <!-- Product Name -->
   <div class="ad-field">
 
@@ -162,25 +183,25 @@
 
       <input
         type="number"
-        [(ngModel)]="stock"
-        name="stock">
+        [(ngModel)]="stockQuantity"
+        name="stockQuantity">
 
     </div>
 
   </div>
 
-  <!-- Image -->
-  <div class="ad-field">
+<!-- Product Image -->
+<div class="ad-field">
 
-    <label>Image URL</label>
+  <label>Product Image</label>
 
-    <input
-      type="text"
-      [(ngModel)]="imageUrl"
-      name="imageUrl"
-      placeholder="https://image.jpg">
+  <input
+    type="file"
+    accept="image/*"
+    (change)="onImageSelected($event)"
+  />
 
-  </div>
+</div>
 
   <!-- Active -->
   <div class="ad-field">
