@@ -4,20 +4,20 @@ WORKDIR /src
 
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 
-# Copy solution file and project files first
+# Copy solution and project files
 COPY *.sln ./
 COPY NexaCart.API/*.csproj ./NexaCart.API/
 COPY NexaCart.Application/*.csproj ./NexaCart.Application/
 COPY NexaCart.Domain/*.csproj ./NexaCart.Domain/
 COPY NexaCart.Infrastructure/*.csproj ./NexaCart.Infrastructure/
 
-# Restore dependencies for the API project sequentially
+# Restore dependencies sequentially to save RAM
 RUN dotnet restore NexaCart.API/NexaCart.API.csproj --disable-parallel
 
-# Copy the rest of the source code
+# Copy all remaining source code
 COPY . ./
 
-# Publish Release binaries for NexaCart.API
+# Publish release binaries
 RUN dotnet publish NexaCart.API/NexaCart.API.csproj -c Release -o /app/out --no-restore -p:Parallel=false
 
 # --- Stage 2: Runtime ---
