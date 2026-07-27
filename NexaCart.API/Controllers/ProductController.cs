@@ -34,7 +34,7 @@ namespace NexaCart.API.Controllers
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateProductRequest request)
+    public async Task<IActionResult> Create([FromForm] CreateProductRequest request)
     {
       var id = await _productService.CreateAsync(request);
 
@@ -42,7 +42,7 @@ namespace NexaCart.API.Controllers
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, CreateProductRequest request)
+    public async Task<IActionResult> Update(int id, [FromForm] CreateProductRequest request)
     {
       await _productService.UpdateAsync(id, request);
 

@@ -25,6 +25,12 @@ namespace NexaCart.Infrastructure.Persistence.Contexts
 
     public DbSet<Product> Products => Set<Product>();
 
+    public DbSet<Cart> Carts => Set<Cart>();
+
+    public DbSet<CartItem> CartItems => Set<CartItem>();
+
+    public DbSet<Wishlist> Wishlists => Set<Wishlist>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);
@@ -161,6 +167,69 @@ namespace NexaCart.Infrastructure.Persistence.Contexts
 
         entity.HasIndex(x => x.BrandName)
               .IsUnique();
+      });
+      modelBuilder.Entity<Cart>(entity =>
+      {
+        entity.ToTable("Cart");
+
+        entity.HasKey(x => x.CartId);
+
+        entity.Property(x => x.CartId)
+              .HasColumnName("CartId");
+
+        entity.Ignore(x => x.Id);
+        entity.Ignore(x => x.IsActive);
+        entity.Ignore(x => x.CreatedBy);
+        entity.Ignore(x => x.ModifiedBy);
+        entity.Ignore(x => x.IsDeleted);
+
+        entity.HasOne(x => x.User)
+              .WithMany()
+              .HasForeignKey(x => x.UserId)
+              .OnDelete(DeleteBehavior.Cascade);
+      });
+
+      modelBuilder.Entity<CartItem>(entity =>
+      {
+        entity.ToTable("CartItems");
+
+        entity.HasKey(x => x.CartItemId);
+
+        entity.Property(x => x.CartItemId)
+              .HasColumnName("CartItemId");
+
+
+        entity.Property(x => x.UnitPrice)
+              .HasPrecision(18, 2);
+
+        entity.HasOne(x => x.Cart)
+              .WithMany(x => x.CartItems)
+              .HasForeignKey(x => x.CartId);
+
+        entity.HasOne(x => x.Product)
+              .WithMany()
+              .HasForeignKey(x => x.ProductId);
+      });
+
+
+      modelBuilder.Entity<Wishlist>(entity =>
+      {
+        entity.ToTable("Wishlist");
+
+        entity.HasKey(x => x.WishlistId);
+
+        entity.Property(x => x.WishlistId)
+              .HasColumnName("WishlistId");
+
+        entity.HasOne(x => x.User)
+              .WithMany()
+              .HasForeignKey(x => x.UserId)
+              .OnDelete(DeleteBehavior.Cascade);
+
+        entity.HasOne(x => x.Product)
+              .WithMany()
+              .HasForeignKey(x => x.ProductId)
+              .OnDelete(DeleteBehavior.Cascade);
       });
 
 

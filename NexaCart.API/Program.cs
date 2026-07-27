@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using NexaCart.Application.Interfaces;
 using NexaCart.Application.Services;
@@ -12,6 +13,10 @@ using NexaCart.Infrastructure.Repositories;
 using NexaCart.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Ensure the app binds to Render's dynamic PORT variable
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 builder.Services.AddControllers();
 
@@ -71,6 +76,15 @@ builder.Services.AddScoped<IProductService, ProductService>();
 // Brand
 builder.Services.AddScoped<IBrandRepository, BrandRepository>();
 builder.Services.AddScoped<IBrandService, BrandService>();
+
+// Cart
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<ICartService, CartService>();
+
+//Wishlist
+builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
+
 builder.Services.AddAuthentication(options =>
 {
   options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -108,11 +122,20 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+
 if (app.Environment.IsDevelopment())
 {
   app.UseSwagger();
   app.UseSwaggerUI();
 }
+
+var mediaPath = @"F:\NexaCartMedia";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+  FileProvider = new PhysicalFileProvider(mediaPath),
+  RequestPath = ""
+});
 
 app.UseHttpsRedirection();
 

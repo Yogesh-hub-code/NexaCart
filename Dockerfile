@@ -2,27 +2,31 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Disable telemetry to save overhead RAM
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 
-# Copy project file and restore sequentially (prevents memory spikes)
-COPY *.csproj ./
-RUN dotnet restore --disable-parallel
+# Copy solution file and project files first
+COPY *.sln ./
+COPY NexaCart.API/*.csproj ./NexaCart.API/
+COPY NexaCart.Application/*.csproj ./NexaCart.Application/
+COPY NexaCart.Domain/*.csproj ./NexaCart.Domain/
+COPY NexaCart.Infrastructure/*.csproj ./NexaCart.Infrastructure/
 
-# Copy remaining source code
+# Restore dependencies for the API project sequentially
+RUN dotnet restore NexaCart.API/NexaCart.API.csproj --disable-parallel
+
+# Copy the rest of the source code
 COPY . ./
 
-# Publish sequentially using single-threaded compilation
-RUN dotnet publish -c Release -o /app/out --no-restore -p:Parallel=false
+# Publish Release binaries for NexaCart.API
+RUN dotnet publish NexaCart.API/NexaCart.API.csproj -c Release -o /app/out --no-restore -p:Parallel=false
 
 # --- Stage 2: Runtime ---
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Copy binaries from Stage 1
 COPY --from=build /app/out .
 
 ENV PORT=8080
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "NexaCart.dll"]
+ENTRYPOINT ["dotnet", "NexaCart.API.dll"]

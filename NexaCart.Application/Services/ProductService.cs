@@ -54,6 +54,22 @@
         BrandId = request.BrandId,
         IsActive = request.IsActive
       };
+      if (request.Image != null)
+      {
+        var fileName = Guid.NewGuid() + Path.GetExtension(request.Image.FileName);
+
+        var folderPath = @"F:\NexaCartMedia\uploads\products";
+
+        if (!Directory.Exists(folderPath))
+          Directory.CreateDirectory(folderPath);
+
+        var filePath = Path.Combine(folderPath, fileName);
+
+        using var stream = new FileStream(filePath, FileMode.Create);
+        await request.Image.CopyToAsync(stream);
+
+        product.ThumbnailImage = "/uploads/products/" + fileName;
+      }
 
       return await _productRepository.CreateAsync(product);
     }
@@ -72,10 +88,26 @@
       product.DiscountPrice = request.DiscountPrice;
       product.StockQuantity = request.StockQuantity;
       product.SKU = request.SKU;
-      product.ThumbnailImage = request.ThumbnailImage;
       product.CategoryId = request.CategoryId;
       product.BrandId = request.BrandId;
       product.IsActive = request.IsActive;
+      // Upload new image if selected
+    if (request.Image != null)
+    {
+        var fileName = Guid.NewGuid() + Path.GetExtension(request.Image.FileName);
+
+        var folderPath = @"F:\NexaCartMedia\uploads\products";
+
+        if (!Directory.Exists(folderPath))
+            Directory.CreateDirectory(folderPath);
+
+        var filePath = Path.Combine(folderPath, fileName);
+
+        using var stream = new FileStream(filePath, FileMode.Create);
+        await request.Image.CopyToAsync(stream);
+
+        product.ThumbnailImage = "/uploads/products/" + fileName;
+    }
 
 
       await _productRepository.UpdateAsync(product);

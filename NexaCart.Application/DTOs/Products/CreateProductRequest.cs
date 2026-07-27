@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using NexaCart.Domain.Common;
 
 namespace NexaCart.Application.DTOs.Products
@@ -21,6 +22,8 @@ namespace NexaCart.Application.DTOs.Products
     public string? SKU { get; set; }
 
     public string? ThumbnailImage { get; set; }
+
+    public IFormFile? Image { get; set; }
 
     [Required]
     public int CategoryId { get; set; }
