@@ -12,27 +12,10 @@ using NexaCart.Infrastructure.Persistence.Contexts;
 using NexaCart.Infrastructure.Repositories;
 using NexaCart.Infrastructure.Services;
 
-// 1. MUST be set before CreateBuilder to disable file system watchers globally
-Environment.SetEnvironmentVariable("DOTNET_USE_POLLING_FILE_WATCHER", "false");
-
-// 2. Initialize WebApplicationBuilder without default auto-reload configuration
-var builder = WebApplication.CreateBuilder(new WebApplicationOptions
-{
-  Args = args
-});
-
-// 3. Rebuild configuration explicitly with reloadOnChange set to false
-builder.Configuration.Sources.Clear();
-builder.Configuration
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: false)
-    .AddEnvironmentVariables();
-
-// 4. Ensure the app binds to Render's dynamic PORT variable
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
@@ -142,7 +125,22 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
-var mediaPath = @"F:\NexaCartMedia";
+//var mediaPath = @"F:\NexaCartMedia";
+
+//app.UseStaticFiles(new StaticFileOptions
+//{
+//  FileProvider = new PhysicalFileProvider(mediaPath),
+//  RequestPath = ""
+//});
+
+var mediaPath = builder.Configuration["MediaPath"];
+
+if (string.IsNullOrWhiteSpace(mediaPath))
+{
+  mediaPath = Path.Combine(builder.Environment.ContentRootPath, "Media");
+}
+
+Directory.CreateDirectory(mediaPath);
 
 app.UseStaticFiles(new StaticFileOptions
 {
