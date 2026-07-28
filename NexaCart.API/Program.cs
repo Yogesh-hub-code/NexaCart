@@ -133,21 +133,15 @@ if (app.Environment.IsDevelopment())
 //  RequestPath = ""
 //});
 
-var mediaPath = builder.Configuration["MediaPath"];
-
-if (string.IsNullOrWhiteSpace(mediaPath))
-{
-  mediaPath = Path.Combine(builder.Environment.ContentRootPath, "Media");
-}
+var mediaPath = Path.Combine(AppContext.BaseDirectory, "Media");
 
 Directory.CreateDirectory(mediaPath);
 
 app.UseStaticFiles(new StaticFileOptions
 {
   FileProvider = new PhysicalFileProvider(mediaPath),
-  RequestPath = ""
+  RequestPath = "/Media"
 });
-
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAngular");
